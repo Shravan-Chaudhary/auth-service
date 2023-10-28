@@ -32,6 +32,20 @@ describe('', () => {
         (response.headers as Record<string, string>)['content-type']
       ).toEqual(expect.stringContaining('json'))
     })
+
+    it('should persist use in database', async () => {
+      // Arrange
+      const userData = {
+        firstName: 'Shravan',
+        lastName: 'Chaudhary',
+        email: 'shravan@gmail.com',
+        password: 'secret'
+      }
+      // Act
+      await request(app).post('/auth/register').send(userData)
+
+      // Assert
+    })
   })
 
   // describe('Some fields are missing', () => {
