@@ -6,6 +6,9 @@ import authRouter from './routes/auth'
 
 const app = express()
 
+// Middlewares
+app.use(express.json())
+
 // Routes
 app.get('/', async (req, res) => {
   res.send('Welcome to the club!')
