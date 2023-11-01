@@ -47,9 +47,7 @@ describe('', () => {
       // Act
       const response = await request(app).post('/auth/register').send(userData)
       // Assert
-      expect(
-        (response.headers as Record<string, string>)['content-type']
-      ).toEqual(expect.stringContaining('json'))
+      expect((response.headers as Record<string, string>)['content-type']).toEqual(expect.stringContaining('json'))
     })
 
     it('should persist use in database', async () => {
@@ -70,6 +68,21 @@ describe('', () => {
       expect(users[0].firstName).toBe(userData.firstName) // Shravan
       expect(users[0].lastName).toBe(userData.lastName) // Chaudhary
       expect(users[0].email).toBe(userData.email) // shravan@gmail
+    })
+
+    it('should return id of created user', async () => {
+      // Arrange
+      const userData = {
+        firstName: 'Shravan',
+        lastName: 'Chaudhary',
+        email: 'shravan@gmail.com',
+        password: 'secret'
+      }
+      // Act
+      const response = await request(app).post('/auth/register').send(userData)
+
+      // Assert
+      expect(response.body).toHaveProperty('id')
     })
   })
 
