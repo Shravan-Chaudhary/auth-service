@@ -3,7 +3,7 @@ import app from '../../src/app'
 import { AppDataSource } from '../../src/config/data-source'
 import { DataSource } from 'typeorm'
 import { User } from '../../src/entity/User'
-import { truncateTables } from '../utils'
+import { Roles } from '../../src/constants'
 
 describe('', () => {
   let connection: DataSource
@@ -14,7 +14,8 @@ describe('', () => {
 
   beforeEach(async () => {
     // Database Truncate
-    await truncateTables(connection)
+    await connection.dropDatabase()
+    await connection.synchronize()
   })
 
   afterAll(async () => {
@@ -83,6 +84,24 @@ describe('', () => {
 
       // Assert
       expect(response.body).toHaveProperty('id')
+    })
+
+    it('should assign customer role', async () => {
+      // Arrange
+      const userData = {
+        firstName: 'Shravan',
+        lastName: 'Chaudhary',
+        email: 'shravan@gmail.com',
+        password: 'secret'
+      }
+      // Act
+      await request(app).post('/auth/register').send(userData)
+
+      // Assert
+      const userRepository = connection.getRepository(User)
+      const users = await userRepository.find()
+      expect(users[0]).toHaveProperty('role')
+      expect(users[0].role).toBe(Roles.CUSTOMER)
     })
   })
 
