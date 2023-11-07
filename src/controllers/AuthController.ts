@@ -3,7 +3,7 @@ import { RegisterUserRequest } from "../types";
 import { UserService } from "../services/UserService";
 import { User } from "../entity/User";
 import { Logger } from "winston";
-import createHttpError from "http-errors";
+import { validationResult } from "express-validator";
 
 export class AuthController {
   constructor(
@@ -12,12 +12,13 @@ export class AuthController {
   ) {}
 
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
-    const { firstName, lastName, email, password } = req.body;
-
-    if (!email) {
-      const error = createHttpError(400, "Email is required");
-      next(error);
+    // validate request body
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
     }
+
+    const { firstName, lastName, email, password } = req.body;
 
     this.logger.debug("New Request to register a user", { firstName, lastName, email, password: "****" });
 

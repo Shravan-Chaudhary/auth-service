@@ -156,7 +156,11 @@ describe("", () => {
       const response = await request(app).post("/auth/register").send(userData);
 
       // Assert
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
       expect(response.statusCode).toBe(400);
+      expect(users).toHaveLength(0);
     });
   });
 });
