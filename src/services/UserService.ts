@@ -1,9 +1,9 @@
-import { Repository } from 'typeorm'
-import bcrypt from 'bcrypt'
-import { User } from '../entity/User'
-import { UserData } from '../types'
-import createHttpError from 'http-errors'
-import { Roles } from '../constants'
+import { Repository } from "typeorm";
+import bcrypt from "bcrypt";
+import { User } from "../entity/User";
+import { UserData } from "../types";
+import createHttpError from "http-errors";
+import { Roles } from "../constants";
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
@@ -12,18 +12,18 @@ export class UserService {
     // Check if user already exists
     const user = await this.userRepository.findOne({
       where: {
-        email: email
-      }
-    })
+        email: email,
+      },
+    });
 
     if (user) {
-      const error = createHttpError(400, 'User already exists with this email')
-      throw error
+      const error = createHttpError(409, "User already exists with this email");
+      throw error;
     }
 
     // Hash password
-    const saltRounds = 10
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Store user in database
     try {
@@ -32,11 +32,11 @@ export class UserService {
         lastName,
         email,
         password: hashedPassword,
-        role: Roles.CUSTOMER
-      })
+        role: Roles.CUSTOMER,
+      });
     } catch (err) {
-      const error = createHttpError(500, 'Failed to store user in database')
-      throw error
+      const error = createHttpError(500, "Failed to store user in database");
+      throw error;
     }
   }
 }
