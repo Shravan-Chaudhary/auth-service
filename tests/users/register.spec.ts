@@ -219,6 +219,40 @@ describe("", () => {
       expect(response.statusCode).toBe(400);
       expect(users).toHaveLength(0);
     });
+
+    it("should return the access token and refresh toke inside a cookie", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Shravan",
+        lastName: "Chaudhary",
+        email: "shravan@gmail.com",
+        password: "",
+      };
+      // Act
+      const response = await request(app).post("/auth/register").send(userData);
+
+      interface Headers {
+        ["set-cookie"]: string[];
+      }
+
+      // Assert
+      let accessToken = null;
+      let refreshToken = null;
+
+      const cookies = (response.headers as Headers)["set-cookie"] || [];
+      cookies.forEach((cookie) => {
+        if (cookie.startsWith("accessToken=")) {
+          accessToken = cookie.split(";")[0].split("=")[1];
+        }
+
+        if (cookie.startsWith("refreshToken=")) {
+          refreshToken = cookie.split(";")[0].split("=")[1];
+        }
+      });
+
+      expect(accessToken).not.toBeNull();
+      expect(refreshToken).not.toBeNull();
+    });
   });
 
   describe("Fields are not in proper format", () => {
@@ -240,5 +274,9 @@ describe("", () => {
 
       expect(user.email).toBe("shravan@gmail.com");
     });
+
+    it.todo("should return 400 status code if email is not valid");
+    it.todo("should return 400 status code if password length is less than 8 chars");
+    it.todo("should return an array of error messages if email is missing");
   });
 });
