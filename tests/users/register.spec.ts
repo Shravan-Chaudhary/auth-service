@@ -141,6 +141,40 @@ describe("", () => {
       expect(response.statusCode).toBe(409);
       expect(users).toHaveLength(1);
     });
+
+    it("should return the access token and refresh toke inside a cookie", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Shravan",
+        lastName: "Chaudhary",
+        email: "shravan@gmail.com",
+        password: "",
+      };
+      // Act
+      const response = await request(app).post("/auth/register").send(userData);
+
+      interface Headers {
+        ["set-cookie"]: string[];
+      }
+
+      // Assert
+      let accessToken = null;
+      let refreshToken = null;
+
+      const cookies = (response.headers as Headers)["set-cookie"] || [];
+      cookies.forEach((cookie) => {
+        if (cookie.startsWith("accessToken=")) {
+          accessToken = cookie.split(";")[0].split("=")[1];
+        }
+
+        if (cookie.startsWith("refreshToken=")) {
+          refreshToken = cookie.split(";")[0].split("=")[1];
+        }
+      });
+
+      expect(accessToken).not.toBeNull();
+      expect(refreshToken).not.toBeNull();
+    });
   });
 
   describe("Some fields are missing", () => {
@@ -218,40 +252,6 @@ describe("", () => {
 
       expect(response.statusCode).toBe(400);
       expect(users).toHaveLength(0);
-    });
-
-    it("should return the access token and refresh toke inside a cookie", async () => {
-      // Arrange
-      const userData = {
-        firstName: "Shravan",
-        lastName: "Chaudhary",
-        email: "shravan@gmail.com",
-        password: "",
-      };
-      // Act
-      const response = await request(app).post("/auth/register").send(userData);
-
-      interface Headers {
-        ["set-cookie"]: string[];
-      }
-
-      // Assert
-      let accessToken = null;
-      let refreshToken = null;
-
-      const cookies = (response.headers as Headers)["set-cookie"] || [];
-      cookies.forEach((cookie) => {
-        if (cookie.startsWith("accessToken=")) {
-          accessToken = cookie.split(";")[0].split("=")[1];
-        }
-
-        if (cookie.startsWith("refreshToken=")) {
-          refreshToken = cookie.split(";")[0].split("=")[1];
-        }
-      });
-
-      expect(accessToken).not.toBeNull();
-      expect(refreshToken).not.toBeNull();
     });
   });
 

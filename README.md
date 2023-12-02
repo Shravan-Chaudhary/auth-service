@@ -1,4 +1,4 @@
-# Authentication Microservice
+# Authentication Microservice 🔐
 
 This is an authentication microservice built with Express and TypeScript. It is designed to provide a secure and efficient way to manage user authentication in a microservices architecture. The service uses JWT for token-based authentication and bcrypt for password hashing and verification. It also uses TypeORM for data persistence and Winston for logging. The service is designed to be containerized using Docker and includes support for CI/CD using GitHub Actions.
 
