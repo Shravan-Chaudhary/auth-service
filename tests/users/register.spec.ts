@@ -4,6 +4,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { DataSource } from "typeorm";
 import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
+import { isJwt } from "../utils";
 
 describe("", () => {
   let connection: DataSource;
@@ -174,6 +175,9 @@ describe("", () => {
 
       expect(accessToken).not.toBeNull();
       expect(refreshToken).not.toBeNull();
+
+      expect(isJwt(accessToken)).toBeTruthy();
+      expect(isJwt(refreshToken)).toBeTruthy();
     });
   });
 
