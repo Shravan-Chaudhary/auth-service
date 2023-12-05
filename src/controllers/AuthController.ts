@@ -1,14 +1,16 @@
-import fs from "fs";
 import { NextFunction, Response } from "express";
-import { JwtPayload, sign } from "jsonwebtoken";
-import { RegisterUserRequest } from "../types";
-import { UserService } from "../services/UserService";
-import { User } from "../entity/User";
-import { Logger } from "winston";
 import { validationResult } from "express-validator";
-import path from "path";
+import fs from "fs";
 import createHttpError from "http-errors";
+import { JwtPayload, sign } from "jsonwebtoken";
+import path from "path";
+import { Logger } from "winston";
 import { Config } from "../config";
+import { AppDataSource } from "../config/data-source";
+import { RefreshToken } from "../entity/RefreshToken";
+import { User } from "../entity/User";
+import { UserService } from "../services/UserService";
+import { RegisterUserRequest } from "../types";
 
 export class AuthController {
   constructor(
@@ -55,10 +57,19 @@ export class AuthController {
         issuer: "auth-service",
       });
 
+      // Persist Refresh Token
+      const YEAR_IN_MS = 1000 * 60 * 60 * 24 * 365; // 1YR
+      const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
+      const newRefreshToken = await refreshTokenRepository.save({
+        user: user,
+        expiresAt: new Date(Date.now() + YEAR_IN_MS),
+      });
+
       const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
         algorithm: "HS256",
         expiresIn: "1y",
         issuer: "auth-service",
+        jwtid: String(newRefreshToken.id),
       });
 
       res.cookie("accessToken", accessToken, {
