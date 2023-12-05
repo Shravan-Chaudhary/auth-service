@@ -5,6 +5,7 @@ import { DataSource } from "typeorm";
 import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
 import { isJwt } from "../utils";
+import { RefreshToken } from "../../src/entity/RefreshToken";
 
 describe("", () => {
   let connection: DataSource;
@@ -178,6 +179,24 @@ describe("", () => {
 
       expect(isJwt(accessToken)).toBeTruthy();
       expect(isJwt(refreshToken)).toBeTruthy();
+    });
+
+    it("should persists the refresh token in database", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Shravan",
+        lastName: "Chaudhary",
+        email: "shravan@gmail.com",
+        password: "",
+      };
+      // Act
+      await request(app).post("/auth/register").send(userData);
+
+      // Assert
+      const refreshTokenRepo = connection.getRepository(RefreshToken);
+      const refreshTokens = await refreshTokenRepo.find();
+
+      expect(refreshTokens).toHaveLength(1);
     });
   });
 
