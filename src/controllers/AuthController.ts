@@ -5,13 +5,16 @@ import { Logger } from "winston";
 import { User } from "../entity/User";
 import { TokenService } from "../services/TokenService";
 import { UserService } from "../services/UserService";
-import { RegisterUserRequest } from "../types";
+import { LoginUserRequest, RegisterUserRequest } from "../types";
+import createHttpError from "http-errors";
+import { CredentialService } from "../services/CredentialService";
 
 export class AuthController {
   constructor(
     private userService: UserService,
     private logger: Logger,
-    private tokenService: TokenService
+    private tokenService: TokenService,
+    private credentialService: CredentialService
   ) {}
 
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
@@ -64,6 +67,71 @@ export class AuthController {
       });
 
       res.status(201).json({ id: user.id });
+    } catch (err) {
+      next(err);
+      return;
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async login(req: LoginUserRequest, res: Response, next: NextFunction) {
+    // validate req body
+    // return response
+    const result = validationResult(req);
+    if (!result.isEmpty()) return res.status(400).json({ errors: result.array() });
+
+    const { email, password } = req.body;
+
+    // find user by email using userservice
+    try {
+      const user = await this.userService.findByEmail(email);
+      if (!user) {
+        const error = createHttpError(401, "Email or password does not match");
+        next(error);
+        return;
+      }
+
+      // match password
+      const matchPassword = this.credentialService.comparePassword(password, user.password);
+      if (!matchPassword) {
+        const error = createHttpError(401, "Email or password does not match");
+        next(error);
+        return;
+      }
+
+      // use token service to return tokens via cookies
+      const payload: JwtPayload = {
+        sub: String(user.id),
+        role: user.role,
+      };
+
+      // generate accesstoken
+      const accessToken = this.tokenService.generateAccessToken(payload);
+
+      // Persist Refresh token record
+      const newRefreshToken = await this.tokenService.persistToken(user);
+
+      // generate refreshtoken
+      const refreshToken = this.tokenService.generateRefreshToken({ ...payload, id: newRefreshToken.id });
+
+      // Access Token Cookie
+      res.cookie("accessToken", accessToken, {
+        domain: "localhost",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60, // 1 hour
+        httpOnly: true,
+      });
+
+      // Refresh Token Cookie
+      res.cookie("refreshToken", refreshToken, {
+        domain: "localhost",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+        httpOnly: true,
+      });
+
+      this.logger.info("User logged in: ", { id: user.id });
+      res.status(200).json({ id: user.id, message: "Logged In Successfully" });
     } catch (err) {
       next(err);
       return;
