@@ -28,4 +28,7 @@ router.post("/login", loginValidator, (req: Request, res: Response, next: NextFu
   authController.login(req, res, next)
 );
 
+// Self
+router.get("/self", loginValidator, (req: Request, res: Response) => authController.self(req, res));
+
 export default router;

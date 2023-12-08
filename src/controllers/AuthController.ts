@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { JwtPayload } from "jsonwebtoken";
 import { Logger } from "winston";
@@ -73,7 +73,6 @@ export class AuthController {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async login(req: LoginUserRequest, res: Response, next: NextFunction) {
     // validate req body
     // return response
@@ -136,5 +135,9 @@ export class AuthController {
       next(err);
       return;
     }
+  }
+
+  async self(req: Request, res: Response) {
+    res.json({});
   }
 }
