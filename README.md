@@ -1,26 +1,31 @@
 # Authentication Microservice 🔐
 
-This is an authentication microservice built with Express and TypeScript. It is designed to provide a secure and efficient way to manage user authentication in a microservices architecture. The service uses JWT for token-based authentication and bcrypt for password hashing and verification. It also uses TypeORM for data persistence and Winston for logging. The service is designed to be containerized using Docker and includes support for CI/CD using GitHub Actions.
+This is an authentication microservice offering advanced, multi-tenant authentication capabilities, built with Express and TypeScript.
 
 ## Tech Stack
 
-- Express
-- TypeScript
-- TypeORM
-- Winston
-- Docker
-- Express Validator
-- JWT
+- **Framework:** [Express](https://expressjs.com/)
+- **ORM:** [TypeORM](https://typeorm.io/)
+- **User Management:** [PostgreSQL](https://www.postgresql.org/)
+- **Authentication:** [JWT](https://jwt.io/)
+- **Validation:** [Express Validator](https://express-validator.github.io/docs/)
+- **Tests:** [Jest](https://jestjs.io/)
+- **Containerization:** [Docker](https://www.docker.com/)
+- **Code Analysis:** [SonarCloud](https://sonarcloud.io/)
+- **CI/CD:** [GitHub Actions](https://github.com/features/actions)
 
 ## Features to Implement
 
-- **Persist User:** Store user data in a database using TypeORM.
-- **JWT:** Implement token-based authentication using JSON Web Tokens.
-- **Access and Refresh Tokens:** Implement a system for issuing and refreshing access tokens.
-- **Docker:** Containerize the service using Docker for easy deployment and scaling.
-- **Validation:** Use Express Validator to validate user input.
-- **GitHub Actions:** Set up CI/CD pipelines using GitHub Actions.
-- **Multi-Tenancy:** Support for multi-tenancy to allow the service to be used by multiple clients.
+- [x] **Persist User:** Store user data in a database using TypeORM.
+- [x] **Authentication:** Implement token-based authentication using JSON Web Tokens.
+- [x] **Access and Refresh Tokens:** Implement a system for issuing and refreshing access tokens.
+- [x] **Validation:** Use Express Validator to validate user input.
+- [x] **Tests:** Write unit and integration tests using Jest.
+- [x] **Docker:** Containerize the service using Docker for easy deployment and scaling.
+- [ ] **Middleware:** Implement custom middleware for handling requests and responses.
+- [ ] **Multi-Tenancy:** Support for multi-tenancy to allow the service to be used by multiple clients.
+- [ ] **GitHub Actions:** Set up CI/CD pipelines using GitHub Actions.
+- [ ] **Code Analysis:** Use tools like ESLint and Prettier for code formatting and analysis.
 
 ## Getting Started
 
