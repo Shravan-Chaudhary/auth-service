@@ -1,13 +1,15 @@
-import "reflect-metadata";
+import cookieParse from "cookie-parser";
 import express, { NextFunction, Request, Response } from "express";
-import logger from "./config/logger";
 import { HttpError } from "http-errors";
+import "reflect-metadata";
+import logger from "./config/logger";
 import authRouter from "./routes/auth";
 
 const app = express();
 
 // Middlewares
 app.use(express.json());
+app.use(cookieParse());
 
 // Routes
 app.get("/", async (req, res) => {
