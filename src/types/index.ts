@@ -17,3 +17,7 @@ export interface LoginUserRequest extends Request {
     password: string;
   };
 }
+
+export type AuthCookie = {
+  accessToken: string;
+};
