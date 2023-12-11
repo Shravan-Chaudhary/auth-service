@@ -18,6 +18,13 @@ export interface LoginUserRequest extends Request {
   };
 }
 
+export interface AuthRequest extends Request {
+  auth: {
+    sub: string;
+    role: string;
+  };
+}
+
 export type AuthCookie = {
   accessToken: string;
 };

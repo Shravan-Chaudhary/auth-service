@@ -10,6 +10,7 @@ import { TokenService } from "../services/TokenService";
 import { UserService } from "../services/UserService";
 import loginValidator from "../validators/login-validator";
 import registerValidator from "../validators/register-validator";
+import { AuthRequest } from "../types";
 
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
@@ -30,6 +31,8 @@ router.post("/login", loginValidator, (req: Request, res: Response, next: NextFu
 );
 
 // Self
-router.get("/self", authenticate, (req: Request, res: Response) => authController.self(req, res));
+router.get("/self", authenticate, (req: Request, res: Response, next: NextFunction) =>
+  authController.self(req as AuthRequest, res, next)
+);
 
 export default router;

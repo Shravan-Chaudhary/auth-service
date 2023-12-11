@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { validationResult } from "express-validator";
 import { JwtPayload } from "jsonwebtoken";
 import { Logger } from "winston";
 import { User } from "../entity/User";
 import { TokenService } from "../services/TokenService";
 import { UserService } from "../services/UserService";
-import { LoginUserRequest, RegisterUserRequest } from "../types";
+import { AuthRequest, LoginUserRequest, RegisterUserRequest } from "../types";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/CredentialService";
 
@@ -129,7 +129,7 @@ export class AuthController {
         httpOnly: true,
       });
 
-      this.logger.info("User logged in: ", { id: user.id });
+      this.logger.info(`User logged in: ${user.id}`);
       res.status(200).json({ id: user.id, message: "Logged In Successfully" });
     } catch (err) {
       next(err);
@@ -137,7 +137,15 @@ export class AuthController {
     }
   }
 
-  async self(req: Request, res: Response) {
-    res.json({});
+  async self(req: AuthRequest, res: Response, next: NextFunction) {
+    const userId = req.auth.sub;
+    try {
+      const user = await this.userService.findById(Number(userId));
+      res.status(200).json(user);
+    } catch (err) {
+      const error = createHttpError(500, "Erro while finding user by id");
+      next(error);
+      return;
+    }
   }
 }
