@@ -141,7 +141,11 @@ export class AuthController {
     const userId = req.auth.sub;
     try {
       const user = await this.userService.findById(Number(userId));
-      res.status(200).json(user);
+      if (user) {
+        res.status(200).json({ ...user, password: undefined }); // send user data without password
+      } else {
+        next(createHttpError(404, "User not found"));
+      }
     } catch (err) {
       const error = createHttpError(500, "Erro while finding user by id");
       next(error);
