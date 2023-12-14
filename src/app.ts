@@ -7,6 +7,9 @@ import authRouter from "./routes/auth";
 
 const app = express();
 
+// Static files
+app.use(express.static("public"));
+
 // Middlewares
 app.use(express.json());
 app.use(cookieParse());
