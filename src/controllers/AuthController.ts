@@ -44,13 +44,13 @@ export class AuthController {
       };
 
       // generate accessToken
-      const accessToken = this.tokenService.generateAccessToken(payload);
+      const accessToken = await this.tokenService.generateAccessToken(payload);
 
       // Persist Refresh Token Record
       const newRefreshToken = await this.tokenService.persistToken(user);
 
       // generate RefreshToken
-      const refreshToken = this.tokenService.generateRefreshToken({ ...payload, id: String(newRefreshToken.id) });
+      const refreshToken = await this.tokenService.generateRefreshToken({ ...payload, id: String(newRefreshToken.id) });
 
       res.cookie("accessToken", accessToken, {
         domain: "localhost",
@@ -105,13 +105,13 @@ export class AuthController {
       };
 
       // generate accesstoken
-      const accessToken = this.tokenService.generateAccessToken(payload);
+      const accessToken = await this.tokenService.generateAccessToken(payload);
 
       // Persist Refresh token record
       const newRefreshToken = await this.tokenService.persistToken(user);
 
       // generate refreshtoken
-      const refreshToken = this.tokenService.generateRefreshToken({ ...payload, id: newRefreshToken.id });
+      const refreshToken = await this.tokenService.generateRefreshToken({ ...payload, id: newRefreshToken.id });
 
       // Access Token Cookie
       res.cookie("accessToken", accessToken, {
