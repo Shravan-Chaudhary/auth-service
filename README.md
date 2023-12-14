@@ -22,7 +22,8 @@ This is an authentication microservice offering advanced, multi-tenant authentic
 - [x] **Validation:** Use Express Validator to validate user input.
 - [x] **Tests:** Write unit and integration tests using Jest.
 - [x] **Docker:** Containerize the service using Docker for easy deployment and scaling.
-- [ ] **Middleware:** Implement custom middleware for handling requests and responses.
+- [x] **Middleware:** Implement custom middleware for handling requests and responses.
+- [ ] **Refresh Token Rotation:** Implement a secure refresh token rotation strategy to enhance security.
 - [ ] **Multi-Tenancy:** Support for multi-tenancy to allow the service to be used by multiple clients.
 - [ ] **GitHub Actions:** Set up CI/CD pipelines using GitHub Actions.
 - [ ] **Code Analysis:** Use tools like ESLint and Prettier for code formatting and analysis.
