@@ -93,5 +93,22 @@ describe("GET /auth/self", () => {
       // Check the user is returned without password
       expect((response.body as Record<string, string>).password).toBeUndefined();
     });
+    it("should return 401 status code if token does not exists", async () => {
+      // Register User
+      const userData = {
+        firstName: "Shravan",
+        lastName: "Chaudhary",
+        email: "shravan@gmail.com",
+        password: "secretpassword",
+      };
+      const userRepository = connection.getRepository(User);
+      await userRepository.save({ ...userData, role: Roles.CUSTOMER });
+
+      // Add token to cookie
+      const response = await request(app).get("/auth/self").send();
+      // Assert
+      // Check the user is returned without password
+      expect(response.statusCode).toBe(401);
+    });
   });
 });
