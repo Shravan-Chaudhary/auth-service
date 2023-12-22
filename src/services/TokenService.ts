@@ -8,7 +8,7 @@ import { User } from "../entity/User";
 import { Repository } from "typeorm";
 
 export class TokenService {
-  constructor(private refreshtokenRepository: Repository<RefreshToken>) {}
+  constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
   async generateAccessToken(payload: JwtPayload) {
     let privateKey: Buffer;
@@ -40,7 +40,7 @@ export class TokenService {
 
   async persistToken(user: User) {
     const YEAR_IN_MS = 1000 * 60 * 60 * 24 * 365; // 1YR
-    const newRefreshToken = await this.refreshtokenRepository.save({
+    const newRefreshToken = await this.refreshTokenRepository.save({
       user: user,
       expiresAt: new Date(Date.now() + YEAR_IN_MS),
     });
