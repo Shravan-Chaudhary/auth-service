@@ -8,6 +8,8 @@ import { UserService } from "../services/UserService";
 import { AuthRequest, LoginUserRequest, RegisterUserRequest } from "../types";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/CredentialService";
+import { setCookie } from "../utils/cookieUtils";
+import { HOUR, YEAR } from "../constants";
 
 export class AuthController {
   constructor(
@@ -156,7 +158,7 @@ export class AuthController {
   async refresh(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { sub, role, id } = req.auth;
-      // Generate new access token
+
       const payload: JwtPayload = {
         sub: sub,
         role: role,
@@ -183,20 +185,10 @@ export class AuthController {
       const refreshToken = await this.tokenService.generateRefreshToken({ ...payload, id: newRefreshToken.id });
 
       // Access Token Cookie
-      res.cookie("accessToken", accessToken, {
-        domain: "localhost",
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60, // 1 hour
-        httpOnly: true,
-      });
+      setCookie(res, "accessToken", accessToken, HOUR);
 
       // Refresh Token Cookie
-      res.cookie("refreshToken", refreshToken, {
-        domain: "localhost",
-        sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-        httpOnly: true,
-      });
+      setCookie(res, "refreshToken", refreshToken, YEAR);
 
       res.json({ id: user.id });
     } catch (err) {
