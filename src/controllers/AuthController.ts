@@ -147,9 +147,61 @@ export class AuthController {
         next(createHttpError(404, "User not found"));
       }
     } catch (err) {
-      const error = createHttpError(500, "Erro while finding user by id");
+      const error = createHttpError(500, "Error while finding user by id");
       next(error);
       return;
+    }
+  }
+
+  async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { sub, role, id } = req.auth;
+      // Generate new access token
+      const payload: JwtPayload = {
+        sub: sub,
+        role: role,
+      };
+
+      // generate accesstoken
+      const accessToken = await this.tokenService.generateAccessToken(payload);
+
+      // Find user
+      const user = await this.userService.findById(Number(sub));
+      if (!user) {
+        const error = createHttpError(400, "User not found for this token");
+        next(error);
+        return;
+      }
+
+      // Persist Refresh token record
+      const newRefreshToken = await this.tokenService.persistToken(user);
+
+      // Delete old refresh token
+      await this.tokenService.deleteToken(Number(id));
+
+      // generate refreshtoken
+      const refreshToken = await this.tokenService.generateRefreshToken({ ...payload, id: newRefreshToken.id });
+
+      // Access Token Cookie
+      res.cookie("accessToken", accessToken, {
+        domain: "localhost",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60, // 1 hour
+        httpOnly: true,
+      });
+
+      // Refresh Token Cookie
+      res.cookie("refreshToken", refreshToken, {
+        domain: "localhost",
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+        httpOnly: true,
+      });
+
+      res.json({ id: user.id });
+    } catch (err) {
+      const error = createHttpError(500, "Error while refreshing token");
+      next(error);
     }
   }
 }
