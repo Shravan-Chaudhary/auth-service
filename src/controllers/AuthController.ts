@@ -179,7 +179,7 @@ export class AuthController {
       const newRefreshToken = await this.tokenService.persistToken(user);
 
       // Delete old refresh token
-      await this.tokenService.deleteToken(Number(id));
+      await this.tokenService.deleteRefreshToken(Number(id));
 
       // generate refreshtoken
       const refreshToken = await this.tokenService.generateRefreshToken({ ...payload, id: newRefreshToken.id });
@@ -193,6 +193,25 @@ export class AuthController {
       res.json({ id: user.id });
     } catch (err) {
       const error = createHttpError(500, "Error while refreshing token");
+      next(error);
+    }
+  }
+
+  async logout(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id, sub } = req.auth;
+      // Delete refresh token
+      await this.tokenService.deleteRefreshToken(Number(id));
+      this.logger.info("Refresh Token Deleted", { id: id });
+      this.logger.info("User Logged Out", { id: sub });
+
+      // Clear cookies
+      res.clearCookie("accessToken");
+      res.clearCookie("refreshToken");
+
+      res.json({ message: "Logged out successfully" });
+    } catch (err) {
+      const error = createHttpError(500, "Error while logging out");
       next(error);
     }
   }
