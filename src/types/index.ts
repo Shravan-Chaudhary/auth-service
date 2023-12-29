@@ -7,8 +7,17 @@ export interface UserData {
   password: string;
 }
 
+export interface TenantData {
+  name: string;
+  address: string;
+}
+
 export interface RegisterUserRequest extends Request {
   body: UserData;
+}
+
+export interface CreateTenantRequest extends Request {
+  body: TenantData;
 }
 
 export interface LoginUserRequest extends Request {
