@@ -29,7 +29,7 @@ export class AuthController {
     const { firstName, lastName, email, password } = req.body;
 
     this.logger.debug("New Request to register a user", { firstName, lastName, email, password: "****" });
-
+    // Create user
     try {
       const user: User = await this.userService.create({
         firstName,

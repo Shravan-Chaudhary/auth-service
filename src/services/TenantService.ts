@@ -33,4 +33,13 @@ export class TenantService {
       throw error;
     }
   }
+
+  async getAllTenants(): Promise<Tenant[]> {
+    try {
+      return await this.tenantRepository.find();
+    } catch (err) {
+      const error = createHttpError(500, "Failed to get tenants from database");
+      throw error;
+    }
+  }
 }
