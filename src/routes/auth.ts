@@ -37,7 +37,7 @@ router.get("/self", authenticate, (req: Request, res: Response, next: NextFuncti
   authController.self(req as AuthRequest, res, next)
 );
 
-//refresh
+//refresh (token rotation)
 router.post("/refresh", validateRefreshToken, (req: Request, res: Response, next: NextFunction) =>
   authController.refresh(req as AuthRequest, res, next)
 );
