@@ -42,4 +42,24 @@ export class TenantService {
       throw error;
     }
   }
+
+  async getTenantById(id: number): Promise<Tenant> {
+    try {
+      const tenant = await this.tenantRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!tenant) {
+        const error = createHttpError(404, "Tenant not found");
+        throw error;
+      }
+
+      return tenant;
+    } catch (err) {
+      const error = createHttpError(500, "Failed to get tenant from database (TenantService)");
+      throw error;
+    }
+  }
 }

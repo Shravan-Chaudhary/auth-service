@@ -27,4 +27,8 @@ router.get("/", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Resp
   tenantController.getTenants(req, res, next)
 );
 
+router.get("/:id", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Response, next: NextFunction) =>
+  tenantController.getTenantById(req, res, next)
+);
+
 export default router;

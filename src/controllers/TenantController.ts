@@ -41,4 +41,18 @@ export class TenantController {
       next(error);
     }
   }
+
+  async getTenantById(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+
+    try {
+      const tenant = await this.tenantService.getTenantById(Number(id));
+      res.status(200).json(tenant);
+    } catch (err) {
+      const error = createHttpError(500, "Failed to get tenant from database");
+      next(error);
+    }
+  }
+  // TODO: Update tenant method
+  // TODO: Delete tenant method
 }
