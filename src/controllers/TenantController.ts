@@ -54,11 +54,24 @@ export class TenantController {
     }
   }
   // TODO: Update tenant method
-  async updateTenantById(req: CreateTenantRequest, res: Response, next: NextFunction) {
+  async update(req: CreateTenantRequest, res: Response, next: NextFunction) {
     // validation
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+    }
+    const { name, address } = req.body;
+
     // check the req params id
     const { tenantId } = req.params;
-    const { name, address } = req.body;
+    if (isNaN(Number(tenantId))) {
+      const error = createHttpError(400, "Invalid url param");
+      next(error);
+      return;
+    }
+
+    this.logger.debug("New Request to update a tenant", { tenantId });
+
     try {
       await this.tenantService.update(Number(tenantId), {
         name,
