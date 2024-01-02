@@ -34,7 +34,7 @@ export class TenantController {
   async getTenants(req: Request, res: Response, next: NextFunction) {
     // Get all tenants by using tenantService instance
     try {
-      const tenants = await this.tenantService.getAllTenants();
+      const tenants = await this.tenantService.getAll();
       res.status(200).json(tenants);
     } catch (err) {
       const error = createHttpError(500, "Failed to get tenants from database");
@@ -46,7 +46,7 @@ export class TenantController {
     const { id } = req.params;
 
     try {
-      const tenant = await this.tenantService.getTenantById(Number(id));
+      const tenant = await this.tenantService.getById(Number(id));
       res.status(200).json(tenant);
     } catch (err) {
       const error = createHttpError(500, "Failed to get tenant from database");
@@ -54,5 +54,22 @@ export class TenantController {
     }
   }
   // TODO: Update tenant method
+  async updateTenantById(req: CreateTenantRequest, res: Response, next: NextFunction) {
+    // validation
+    // check the req params id
+    const { tenantId } = req.params;
+    const { name, address } = req.body;
+    try {
+      await this.tenantService.update(Number(tenantId), {
+        name,
+        address,
+      });
+
+      res.status(200).json({ id: Number(tenantId) });
+    } catch (err) {
+      const error = createHttpError(500, "Failed to update tenant from database");
+      next(error);
+    }
+  }
   // TODO: Delete tenant method
 }

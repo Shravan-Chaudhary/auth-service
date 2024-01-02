@@ -8,7 +8,7 @@ import logger from "../config/logger";
 import authenticate from "../middlewares/authenticate";
 import { canAccess } from "../middlewares/canAccess";
 import { Roles } from "../constants";
-import createTenantValidator from "../validators/create-tenant-validator";
+import createTenantValidator from "../validators/tenant-validator";
 
 const router = express.Router();
 const tenantRepository = AppDataSource.getRepository(Tenant);
@@ -23,12 +23,23 @@ router.post(
   (req: Request, res: Response, next: NextFunction) => tenantController.create(req as CreateTenantRequest, res, next)
 );
 
-router.get("/", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Response, next: NextFunction) =>
-  tenantController.getTenants(req, res, next)
+router.get(
+  "/",
+  authenticate,
+  canAccess([Roles.ADMIN, Roles.CUSTOMER]),
+  (req: Request, res: Response, next: NextFunction) => tenantController.getTenants(req, res, next)
 );
 
 router.get("/:id", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Response, next: NextFunction) =>
   tenantController.getTenantById(req, res, next)
+);
+
+router.patch(
+  "/:id",
+  authenticate,
+  canAccess([Roles.ADMIN, Roles.CUSTOMER]),
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.updateTenantById(req as CreateTenantRequest, res, next)
 );
 
 export default router;

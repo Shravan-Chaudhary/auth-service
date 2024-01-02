@@ -34,7 +34,7 @@ export class TenantService {
     }
   }
 
-  async getAllTenants(): Promise<Tenant[]> {
+  async getAll(): Promise<Tenant[]> {
     try {
       return await this.tenantRepository.find();
     } catch (err) {
@@ -43,7 +43,7 @@ export class TenantService {
     }
   }
 
-  async getTenantById(id: number): Promise<Tenant> {
+  async getById(id: number): Promise<Tenant> {
     try {
       const tenant = await this.tenantRepository.findOne({
         where: {
@@ -59,6 +59,33 @@ export class TenantService {
       return tenant;
     } catch (err) {
       const error = createHttpError(500, "Failed to get tenant from database (TenantService)");
+      throw error;
+    }
+  }
+
+  async update(id: number, tenantData: TenantData): Promise<Tenant> {
+    const { name, address } = tenantData;
+    try {
+      const tenant = await this.tenantRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!tenant) {
+        const error = createHttpError(404, "Tenant not found");
+        throw error;
+      }
+
+      await this.tenantRepository.update({ id }, { name, address });
+      const updatedTenant = await this.tenantRepository.findOne({ where: { id } });
+      if (!updatedTenant) {
+        const error = createHttpError(404, "Updated tenant not found");
+        throw error;
+      }
+      return updatedTenant;
+    } catch (err) {
+      const error = createHttpError(500, "Failed to update tenant from database (TenantService)");
       throw error;
     }
   }
