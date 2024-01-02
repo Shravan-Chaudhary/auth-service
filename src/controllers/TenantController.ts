@@ -63,7 +63,7 @@ export class TenantController {
     const { name, address } = req.body;
 
     // check the req params id
-    const { tenantId } = req.params;
+    const tenantId = req.params.id;
     if (isNaN(Number(tenantId))) {
       const error = createHttpError(400, "Invalid url param");
       next(error);
@@ -85,4 +85,22 @@ export class TenantController {
     }
   }
   // TODO: Delete tenant method
+  async delete(req: Request, res: Response, next: NextFunction) {
+    // check the req params id
+    const tenantId = req.params.id;
+
+    if (isNaN(Number(tenantId))) {
+      const error = createHttpError(400, "Invalid url param");
+      next(error);
+      return;
+    }
+
+    try {
+      await this.tenantService.delete(Number(tenantId));
+      this.logger.info("Tenant deleted", { id: tenantId });
+      res.status(200).json({ id: Number(tenantId) });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
