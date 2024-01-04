@@ -3,12 +3,11 @@ import bcrypt from "bcrypt";
 import { User } from "../entity/User";
 import { UserData } from "../types";
 import createHttpError from "http-errors";
-import { Roles } from "../constants";
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
-  async create({ firstName, lastName, email, password }: UserData): Promise<User> {
+  async create({ firstName, lastName, email, password, role }: UserData): Promise<User> {
     // Check if user already exists
     const user = await this.userRepository.findOne({
       where: {
@@ -32,7 +31,7 @@ export class UserService {
         lastName,
         email,
         password: hashedPassword,
-        role: Roles.CUSTOMER,
+        role,
       });
     } catch (err) {
       const error = createHttpError(500, "Failed to store user in database");

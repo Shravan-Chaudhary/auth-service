@@ -9,7 +9,7 @@ import { AuthRequest, LoginUserRequest, RegisterUserRequest } from "../types";
 import createHttpError from "http-errors";
 import { CredentialService } from "../services/CredentialService";
 import { setCookie } from "../utils/cookieUtils";
-import { HOUR, YEAR } from "../constants";
+import { HOUR, Roles, YEAR } from "../constants";
 
 export class AuthController {
   constructor(
@@ -36,6 +36,7 @@ export class AuthController {
         lastName,
         email,
         password,
+        role: Roles.CUSTOMER,
       });
       this.logger.info("User registered", { id: user.id });
 
