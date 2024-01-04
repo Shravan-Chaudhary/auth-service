@@ -60,6 +60,35 @@ describe("POST /users", () => {
       expect(users[0].role).toBe(Roles.MANAGER);
     });
 
+    it("should create a manager user", async () => {
+      const adminToken = jwks.token({
+        sub: "1",
+        role: Roles.ADMIN,
+      });
+
+      // Register User
+      const userData = {
+        firstName: "Shravan",
+        lastName: "Chaudhary",
+        email: "shravan@gmail.com",
+        password: "secretpassword",
+        tenantId: 1,
+      };
+
+      // Add token to cookie
+      await request(app)
+        .post("/users")
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(userData);
+
+      // Assert
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(users).toHaveLength(1);
+      expect(users[0].role).toBe(Roles.MANAGER);
+    });
+
     it.todo("should return 403 if non-admin user tries to create a user");
   });
 });
