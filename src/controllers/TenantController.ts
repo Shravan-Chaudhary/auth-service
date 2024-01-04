@@ -53,7 +53,7 @@ export class TenantController {
       next(error);
     }
   }
-  // TODO: Update tenant method
+
   async update(req: CreateTenantRequest, res: Response, next: NextFunction) {
     // validation
     const result = validationResult(req);
@@ -84,7 +84,7 @@ export class TenantController {
       next(error);
     }
   }
-  // TODO: Delete tenant method
+
   async delete(req: Request, res: Response, next: NextFunction) {
     // check the req params id
     const tenantId = req.params.id;
