@@ -56,4 +56,9 @@ export class UserService {
       },
     });
   }
+
+  async getAll(): Promise<User[]> {
+    // get all users
+    return await this.userRepository.find();
+  }
 }
