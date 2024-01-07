@@ -30,7 +30,7 @@ export class UserController {
     }
   }
 
-  async getAll(req: Request, res: Response, next: NextFunction) {
+  async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await this.userService.getAll();
       if (!users) {
@@ -41,6 +41,22 @@ export class UserController {
       res.status(200).json(users);
     } catch (err) {
       const error = createHttpError(500, "Error while getting users");
+      next(error);
+    }
+  }
+
+  async getUserById(req: Request, res: Response, next: NextFunction) {
+    const userId = parseInt(req.params.id);
+    try {
+      const user = await this.userService.findById(userId);
+      if (!user) {
+        const error = createHttpError(404, "User not found");
+        next(error);
+        return;
+      }
+      res.status(200).json({ ...user, password: undefined }); // send user data without password
+    } catch (err) {
+      const error = createHttpError(500, "Error while getting user");
       next(error);
     }
   }
