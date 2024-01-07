@@ -1,14 +1,14 @@
 import express, { NextFunction, Request, Response } from "express";
+import { AppDataSource } from "../config/data-source";
+import logger from "../config/logger";
 import { Roles } from "../constants";
 import { UserController } from "../controllers/UserController";
+import { User } from "../entity/User";
 import authenticate from "../middlewares/authenticate";
 import { canAccess } from "../middlewares/canAccess";
-import { CreateUserRequest } from "../types";
 import { UserService } from "../services/UserService";
-import { AppDataSource } from "../config/data-source";
-import { User } from "../entity/User";
+import { CreateUserRequest, UpdateUserRequest } from "../types";
 import createUserValidator from "../validators/create-user-validator";
-import logger from "../config/logger";
 
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
@@ -29,6 +29,10 @@ router.get("/", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Resp
 
 router.get("/:id", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Response, next: NextFunction) =>
   userController.getUserById(req, res, next)
+);
+
+router.patch("/:id", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Response, next: NextFunction) =>
+  userController.updateUser(req as UpdateUserRequest, res, next)
 );
 
 export default router;

@@ -8,6 +8,12 @@ export interface UserData {
   role: string;
 }
 
+export interface LimitedUserData {
+  firstName: string;
+  lastName: string;
+  role: string;
+}
+
 export interface TenantData {
   name: string;
   address: string;
@@ -30,6 +36,10 @@ export interface LoginUserRequest extends Request {
     email: string;
     password: string;
   };
+}
+
+export interface UpdateUserRequest extends Request {
+  body: LimitedUserData;
 }
 
 export interface AuthRequest extends Request {

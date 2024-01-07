@@ -1,8 +1,8 @@
-import { Repository } from "typeorm";
 import bcrypt from "bcrypt";
-import { User } from "../entity/User";
-import { UserData } from "../types";
 import createHttpError from "http-errors";
+import { Repository } from "typeorm";
+import { User } from "../entity/User";
+import { LimitedUserData, UserData } from "../types";
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
@@ -60,5 +60,22 @@ export class UserService {
   async getAll(): Promise<User[]> {
     // get all users
     return await this.userRepository.find();
+  }
+
+  async update(userId: number, { firstName, lastName, role }: LimitedUserData) {
+    try {
+      // update user
+      await this.userRepository.update(userId, { firstName, lastName, role });
+
+      // return updated user
+      return await this.userRepository.findOne({
+        where: {
+          id: userId,
+        },
+      });
+    } catch (err) {
+      const error = createHttpError(500, "Failed to update user from database");
+      throw error;
+    }
   }
 }
