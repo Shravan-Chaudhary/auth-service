@@ -46,7 +46,13 @@ export class UserController {
   }
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
+    // check the req params id
     const userId = parseInt(req.params.id);
+    if (isNaN(userId)) {
+      const error = createHttpError(400, "Invalid url param");
+      next(error);
+      return;
+    }
     try {
       const user = await this.userService.findById(userId);
       if (!user) {
@@ -54,6 +60,7 @@ export class UserController {
         next(error);
         return;
       }
+      this.logger.info("User Found", { id: userId });
       res.status(200).json({ ...user, password: undefined }); // send user data without password
     } catch (err) {
       const error = createHttpError(500, "Error while getting user");
@@ -70,22 +77,40 @@ export class UserController {
     const { firstName, lastName, role } = req.body;
 
     // check the req params id
-    const tenantId = req.params.id;
-    if (isNaN(Number(tenantId))) {
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)) {
       const error = createHttpError(400, "Invalid url param");
       next(error);
       return;
     }
-    const userId = parseInt(req.params.id);
     try {
       const updatedUser = await this.userService.update(userId, {
         firstName,
         lastName,
         role,
       });
+      this.logger.info("User updated", { id: userId });
       res.status(200).json({ ...updatedUser, password: undefined }); // send user data without password
     } catch (err) {
       const error = createHttpError(500, "Error while updating user");
+      next(error);
+    }
+  }
+
+  async deleteUser(req: Request, res: Response, next: NextFunction) {
+    // check the req params id
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)) {
+      const error = createHttpError(400, "Invalid url param");
+      next(error);
+      return;
+    }
+    try {
+      await this.userService.delete(userId);
+      this.logger.info("User deleted", { id: userId });
+      res.status(200).json({ id: userId });
+    } catch (err) {
+      const error = createHttpError(500, "Error while deleting user");
       next(error);
     }
   }

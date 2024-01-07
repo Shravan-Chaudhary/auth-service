@@ -78,4 +78,8 @@ export class UserService {
       throw error;
     }
   }
+
+  async delete(userId: number) {
+    return await this.userRepository.delete(userId);
+  }
 }
