@@ -91,6 +91,6 @@ export class TenantService {
   }
 
   async delete(id: number) {
-    await this.tenantRepository.delete({ id });
+    await this.tenantRepository.delete(id);
   }
 }

@@ -43,10 +43,17 @@ export class TenantController {
   }
 
   async getTenantById(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
+    // check the req params id
+    const tenantId = parseInt(req.params.id);
+
+    if (isNaN(tenantId)) {
+      const error = createHttpError(400, "Invalid url param");
+      next(error);
+      return;
+    }
 
     try {
-      const tenant = await this.tenantService.getById(Number(id));
+      const tenant = await this.tenantService.getById(tenantId);
       res.status(200).json(tenant);
     } catch (err) {
       const error = createHttpError(500, "Failed to get tenant from database");
@@ -61,42 +68,40 @@ export class TenantController {
       return res.status(400).json({ errors: result.array() });
     }
     const { name, address } = req.body;
-
     // check the req params id
-    const tenantId = req.params.id;
-    if (isNaN(Number(tenantId))) {
+    const tenantId = parseInt(req.params.id);
+
+    if (isNaN(tenantId)) {
       const error = createHttpError(400, "Invalid url param");
       next(error);
       return;
     }
 
-    this.logger.debug("New Request to update a tenant", { tenantId });
-
     try {
-      await this.tenantService.update(Number(tenantId), {
+      await this.tenantService.update(tenantId, {
         name,
         address,
       });
 
-      res.status(200).json({ id: Number(tenantId) });
+      res.status(200).json({ id: tenantId });
     } catch (err) {
       const error = createHttpError(500, "Failed to update tenant from database");
       next(error);
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction) {
+  async deleteTenant(req: Request, res: Response, next: NextFunction) {
     // check the req params id
-    const tenantId = req.params.id;
+    const tenantId = parseInt(req.params.id);
 
-    if (isNaN(Number(tenantId))) {
+    if (isNaN(tenantId)) {
       const error = createHttpError(400, "Invalid url param");
       next(error);
       return;
     }
 
     try {
-      await this.tenantService.delete(Number(tenantId));
+      await this.tenantService.delete(tenantId);
       this.logger.info("Tenant deleted", { id: tenantId });
       res.status(200).json({ id: Number(tenantId) });
     } catch (err) {
