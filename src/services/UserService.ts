@@ -39,12 +39,13 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string) {
+  async findByEmailWithPassword(email: string) {
     // find user
     return await this.userRepository.findOne({
       where: {
         email: email,
       },
+      select: ["id", "firstName", "lastName", "email", "password", "role"],
     });
   }
 
