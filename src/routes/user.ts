@@ -35,11 +35,8 @@ router.patch("/:id", authenticate, canAccess([Roles.ADMIN]), (req: Request, res:
   userController.updateUser(req as UpdateUserRequest, res, next)
 );
 
-router.delete(
-  "/:id",
-  authenticate,
-  canAccess([Roles.ADMIN, Roles.CUSTOMER]),
-  (req: Request, res: Response, next: NextFunction) => userController.deleteUser(req, res, next)
+router.delete("/:id", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Response, next: NextFunction) =>
+  userController.deleteUser(req, res, next)
 );
 
 export default router;
