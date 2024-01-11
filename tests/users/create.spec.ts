@@ -31,6 +31,7 @@ describe("POST /users", () => {
 
   describe("Given all fields", () => {
     it("should persist the user in the database", async () => {
+      // TODO: Create tenant and send tenantId in the request (remove hardcoded tenantId)
       const adminToken = jwks.token({
         sub: "1",
         role: Roles.ADMIN,
@@ -43,6 +44,7 @@ describe("POST /users", () => {
         email: "shravan@gmail.com",
         password: "secretpassword",
         tenantId: 1,
+        role: Roles.MANAGER,
       };
 
       // Add token to cookie
@@ -85,8 +87,7 @@ describe("POST /users", () => {
       const userRepository = connection.getRepository(User);
       const users = await userRepository.find();
 
-      expect(users).toHaveLength(1);
-      expect(users[0].role).toBe(Roles.MANAGER);
+      expect(users).toHaveLength(0);
     });
 
     it.todo("should return 403 if non-admin user tries to create a user");

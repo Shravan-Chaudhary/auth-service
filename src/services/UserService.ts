@@ -7,7 +7,7 @@ import { LimitedUserData, UserData } from "../types";
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
-  async create({ firstName, lastName, email, password, role }: UserData): Promise<User> {
+  async create({ firstName, lastName, email, password, role, tenantId }: UserData): Promise<User> {
     // Check if user already exists
     const user = await this.userRepository.findOne({
       where: {
@@ -32,6 +32,7 @@ export class UserService {
         email,
         password: hashedPassword,
         role,
+        tenant: tenantId ? { id: tenantId } : undefined,
       });
     } catch (err) {
       const error = createHttpError(500, "Failed to store user in database");
