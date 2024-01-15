@@ -26,17 +26,12 @@ router.post(
 router.patch(
   "/:id",
   authenticate,
-  canAccess([Roles.ADMIN, Roles.CUSTOMER]),
+  canAccess([Roles.ADMIN]),
   tenantValidator,
   (req: Request, res: Response, next: NextFunction) => tenantController.update(req as CreateTenantRequest, res, next)
 );
 
-router.get(
-  "/",
-  authenticate,
-  canAccess([Roles.ADMIN, Roles.CUSTOMER]),
-  (req: Request, res: Response, next: NextFunction) => tenantController.getTenants(req, res, next)
-);
+router.get("/", (req: Request, res: Response, next: NextFunction) => tenantController.getTenants(req, res, next));
 
 router.get("/:id", authenticate, canAccess([Roles.ADMIN]), (req: Request, res: Response, next: NextFunction) =>
   tenantController.getTenantById(req, res, next)
