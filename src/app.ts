@@ -6,10 +6,18 @@ import logger from "./config/logger";
 import authRouter from "./routes/auth";
 import tenantRouter from "./routes/tenant";
 import userRouter from "./routes/user";
+import cors from "cors";
+import { Config } from "./config";
 
 const app = express();
 
 // Static files
+app.use(
+  cors({
+    origin: [Config.ORIGIN_URI!],
+    credentials: true,
+  })
+);
 app.use(express.static("public"));
 
 // Middlewares
