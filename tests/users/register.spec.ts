@@ -19,6 +19,24 @@ describe("POST /auth/register", () => {
             // Assert
             expect(response.status).toBe(201);
         });
+
+        it("should return valid json", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app).post("/auth/register");
+
+            // Assert
+            expect(
+                (response.headers as Record<string, string>)["content-type"],
+            ).toEqual(expect.stringContaining("json"));
+        });
     });
 
     describe("Given all fields", () => {});
