@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express, { Request, Response } from "express";
 import authRouter from "./routes/auth";
 import { globalErrorHandler } from "./common/middlewares/globalErrorHandler";
