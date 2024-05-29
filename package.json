@@ -3,6 +3,7 @@
    "version": "1.0.0",
    "description": "A user management service",
    "main": "index.js",
+   "note_using_env_variables:": "Injecting env_vars can be tricky because of how different terminals and operating systems works, to solve that issue use cross-env",
    "scripts": {
       "dev": "cross-env NODE_ENV=development nodemon src/server.ts",
       "build": "tsc",
@@ -25,7 +26,6 @@
       "@types/node": "^16.11.10",
       "@types/supertest": "^2.0.12",
       "@types/uuid": "^9.0.8",
-      "@types/winston": "^2.4.4",
       "@typescript-eslint/eslint-plugin": "^6.6.0",
       "@typescript-eslint/parser": "^6.6.0",
       "eslint": "^8.48.0",
