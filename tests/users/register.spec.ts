@@ -15,7 +15,7 @@ describe("POST /auth/register", () => {
     beforeEach(async () => {
         // Clear the database before each test
         await connection.dropDatabase();
-        // await connection.synchronize();
+        await connection.synchronize();
     });
 
     afterAll(async () => {
@@ -80,6 +80,9 @@ describe("POST /auth/register", () => {
             const users = await userRepository.find();
 
             expect(users).toHaveLength(1);
+            expect(users[0].email).toBe(user.email);
+            expect(users[0].firstName).toBe(user.firstName);
+            expect(users[0].lastName).toBe(user.lastName);
         });
     });
 
