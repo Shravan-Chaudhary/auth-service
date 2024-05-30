@@ -84,6 +84,28 @@ describe("POST /auth/register", () => {
             expect(users[0].firstName).toBe(user.firstName);
             expect(users[0].lastName).toBe(user.lastName);
         });
+
+        it("should return an id of created user", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(response.body).toHaveProperty("id");
+            expect(response.body.id).toBe(users[0].id);
+        });
     });
 
     describe("Given all fields", () => {});

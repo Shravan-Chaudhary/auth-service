@@ -19,6 +19,6 @@ export class AuthController {
             password,
         });
 
-        res.status(201).json({ message: user.id.toString() });
+        res.status(201).json({ id: user.id });
     }
 }
