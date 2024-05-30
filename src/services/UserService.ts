@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import createHttpError from "http-errors";
 import AppDataSource from "../config/data-source";
 import { User } from "../entity/User";
 import { UserData } from "../types";
+import { Repository } from "typeorm";
 
 export interface IUserService {
     create(userData: UserData): Promise<User>;
@@ -13,18 +15,28 @@ export interface IUserService {
 }
 
 export class UserService implements IUserService {
-    constructor() {}
+    userRepository: Repository<User>;
+    constructor(userRepository: Repository<User>) {
+        this.userRepository = userRepository;
+    }
 
-    public async create(userData: UserData): Promise<User> {
-        const { firstName, lastName, email, password } = userData;
-        const userRepository = AppDataSource.getRepository(User);
-
-        return await userRepository.save({
-            firstName,
-            lastName,
-            email,
-            password,
-        });
+    public async create({
+        firstName,
+        lastName,
+        email,
+        password,
+    }: UserData): Promise<User> {
+        try {
+            return await this.userRepository.save({
+                firstName,
+                lastName,
+                email,
+                password,
+            });
+        } catch (error) {
+            const err = createHttpError(500, "error while creating user");
+            throw err;
+        }
     }
 
     findByEmailWithPassword(email: string): Promise<User> {
