@@ -1,14 +1,18 @@
 import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
-import { IUserService } from "../services/UserService";
+import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 
-export class AuthController {
-    userService: IUserService;
+interface IAuthController {
+    register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
+}
+
+export class AuthController implements IAuthController {
+    authService: IAuthService;
     logger: Logger;
 
-    constructor(userService: IUserService, logger: Logger) {
-        this.userService = userService;
+    constructor(authService: IAuthService, logger: Logger) {
+        this.authService = authService;
         this.logger = logger;
     }
     public async register(
@@ -21,7 +25,7 @@ export class AuthController {
         const { firstName, lastName, email, password } = req.body;
 
         try {
-            const user = await this.userService.create({
+            const user = await this.authService.create({
                 firstName,
                 lastName,
                 email,
