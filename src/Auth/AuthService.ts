@@ -28,6 +28,7 @@ export class AuthService implements IAuthService {
                 lastName,
                 email,
                 password,
+                role: "customer",
             });
         } catch (error) {
             const err = createHttpError(500, "error while creating user");

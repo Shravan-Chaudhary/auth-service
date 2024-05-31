@@ -106,6 +106,25 @@ describe("POST /auth/register", () => {
             expect(response.body).toHaveProperty("id");
             expect(response.body.id).toBe(users[0].id);
         });
+
+        it("should assign customer role", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            await request(app).post("/auth/register").send(user);
+
+            // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+            expect(users[0]).toHaveProperty("role");
+            expect(users[0].role).toEqual("customer");
+        });
     });
 
     describe("Given all fields", () => {});
