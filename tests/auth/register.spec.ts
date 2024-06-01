@@ -172,5 +172,77 @@ describe("POST /auth/register", () => {
         });
     });
 
-    describe("Given all fields", () => {});
+    describe("Fields are missing", () => {
+        it("should return 400 status code if email is missing", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
+
+        it("should return 400 status code if firstName is missing", async () => {
+            // Arrange
+            const user = {
+                firstName: "",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
+
+        it("should return 400 status code if lastName is missing", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
+
+        it("should return 400 status code if password is missing", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
+    });
 });
