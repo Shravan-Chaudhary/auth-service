@@ -147,6 +147,27 @@ describe("POST /auth/register", () => {
             expect(users[0].password).toHaveLength(60); // 60 is the length of the hash
             expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
         });
+
+        it("should return 409 status code if email aldready exists", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            const userRepository = connection.getRepository(User);
+            userRepository.save({ ...user, role: "customer" });
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(409);
+        });
     });
 
     describe("Given all fields", () => {});
