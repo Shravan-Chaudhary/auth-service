@@ -23,6 +23,17 @@ export class AuthService implements IAuthService {
         email,
         password,
     }: UserData): Promise<User> {
+        const userExists = await this.userRepository.findOne({
+            where: {
+                email,
+            },
+        });
+
+        if (userExists) {
+            const err = createHttpError(409, "user already exists");
+            throw err;
+        }
+
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
