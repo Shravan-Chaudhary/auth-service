@@ -23,6 +23,12 @@ export class AuthController implements IAuthController {
         //  validate & sanitize user input
         // check if user exists
         const { firstName, lastName, email, password } = req.body;
+        this.logger.debug("request to register a user: ", {
+            firstName,
+            lastName,
+            email,
+            password: "********",
+        });
 
         try {
             const user = await this.authService.create({
@@ -31,7 +37,7 @@ export class AuthController implements IAuthController {
                 email,
                 password,
             });
-
+            this.logger.info("user created with id: ", user.id);
             res.status(201).json({ id: user.id });
         } catch (error) {
             next(error);
