@@ -142,6 +142,10 @@ describe("POST /auth/register", () => {
             const userRepository = connection.getRepository(User);
             const users = await userRepository.find();
             expect(users[0].password).not.toBe(user.password);
+
+            // hash is made up of (algo, cost, salt, hash). Idea is to match the starting expression
+            expect(users[0].password).toHaveLength(60); // 60 is the length of the hash
+            expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
         });
     });
 
