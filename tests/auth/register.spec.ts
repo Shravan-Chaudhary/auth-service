@@ -166,7 +166,9 @@ describe("POST /auth/register", () => {
                 .send(user);
 
             // Assert
+            const users = await userRepository.find();
             expect(response.statusCode).toBe(409);
+            expect(users).toHaveLength(1);
         });
     });
 
