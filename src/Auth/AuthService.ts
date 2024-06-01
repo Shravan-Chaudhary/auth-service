@@ -3,6 +3,7 @@ import createHttpError from "http-errors";
 import { User } from "../entity/User";
 import { UserData } from "../types";
 import { Repository } from "typeorm";
+import bcrypt from "bcrypt";
 
 export interface IAuthService {
     create(userData: UserData): Promise<User>;
@@ -22,12 +23,15 @@ export class AuthService implements IAuthService {
         email,
         password,
     }: UserData): Promise<User> {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         try {
             return await this.userRepository.save({
                 firstName,
                 lastName,
                 email,
-                password,
+                password: hashedPassword,
                 role: "customer",
             });
         } catch (error) {
