@@ -188,6 +188,9 @@ describe("POST /auth/register", () => {
                 .send(user);
 
             // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+            expect(users).toHaveLength(0);
             expect(response.statusCode).toBe(400);
         });
 
@@ -206,6 +209,9 @@ describe("POST /auth/register", () => {
                 .send(user);
 
             // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+            expect(users).toHaveLength(0);
             expect(response.statusCode).toBe(400);
         });
 
@@ -224,6 +230,9 @@ describe("POST /auth/register", () => {
                 .send(user);
 
             // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+            expect(users).toHaveLength(0);
             expect(response.statusCode).toBe(400);
         });
 
@@ -242,6 +251,9 @@ describe("POST /auth/register", () => {
                 .send(user);
 
             // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+            expect(users).toHaveLength(0);
             expect(response.statusCode).toBe(400);
         });
     });
