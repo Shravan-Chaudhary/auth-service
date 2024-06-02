@@ -2,6 +2,7 @@ import { NextFunction, Response } from "express";
 import { RegisterUserRequest } from "../types";
 import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
+import { validationResult } from "express-validator";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -21,7 +22,13 @@ export class AuthController implements IAuthController {
         next: NextFunction,
     ) {
         //  validate & sanitize user input
-        // check if user exists
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            res.status(400).json({ errors: result.array() });
+            return;
+        }
+
         const { firstName, lastName, email, password } = req.body;
         this.logger.debug("request to register a user: ", {
             firstName,
