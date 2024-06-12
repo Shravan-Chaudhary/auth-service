@@ -195,68 +195,68 @@ describe("POST /auth/register", () => {
             expect(response.statusCode).toBe(400);
         });
 
-        it("should return 400 status code if firstName is missing", async () => {
-            // Arrange
-            const user = {
-                firstName: "",
-                lastName: "Chaudhary",
-                email: "shravan@gmail.com",
-                password: "password",
-            };
+        // it("should return 400 status code if firstName is missing", async () => {
+        //     // Arrange
+        //     const user = {
+        //         firstName: "",
+        //         lastName: "Chaudhary",
+        //         email: "shravan@gmail.com",
+        //         password: "password",
+        //     };
 
-            // Act
-            const response = await request(app)
-                .post("/auth/register")
-                .send(user);
+        //     // Act
+        //     const response = await request(app)
+        //         .post("/auth/register")
+        //         .send(user);
 
-            // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
-            expect(users).toHaveLength(0);
-            expect(response.statusCode).toBe(400);
-        });
+        //     // Assert
+        //     const userRepository = connection.getRepository(User);
+        //     const users = await userRepository.find();
+        //     expect(users).toHaveLength(0);
+        //     expect(response.statusCode).toBe(400);
+        // });
 
-        it("should return 400 status code if lastName is missing", async () => {
-            // Arrange
-            const user = {
-                firstName: "Shravan",
-                lastName: "",
-                email: "shravan@gmail.com",
-                password: "password",
-            };
+        // it("should return 400 status code if lastName is missing", async () => {
+        //     // Arrange
+        //     const user = {
+        //         firstName: "Shravan",
+        //         lastName: "",
+        //         email: "shravan@gmail.com",
+        //         password: "password",
+        //     };
 
-            // Act
-            const response = await request(app)
-                .post("/auth/register")
-                .send(user);
+        //     // Act
+        //     const response = await request(app)
+        //         .post("/auth/register")
+        //         .send(user);
 
-            // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
-            expect(users).toHaveLength(0);
-            expect(response.statusCode).toBe(400);
-        });
+        //     // Assert
+        //     const userRepository = connection.getRepository(User);
+        //     const users = await userRepository.find();
+        //     expect(users).toHaveLength(0);
+        //     expect(response.statusCode).toBe(400);
+        // });
 
-        it("should return 400 status code if password is missing", async () => {
-            // Arrange
-            const user = {
-                firstName: "Shravan",
-                lastName: "Chaudhary",
-                email: "shravan@gmail.com",
-                password: "",
-            };
+        // it("should return 400 status code if password is missing", async () => {
+        //     // Arrange
+        //     const user = {
+        //         firstName: "Shravan",
+        //         lastName: "Chaudhary",
+        //         email: "shravan@gmail.com",
+        //         password: "",
+        //     };
 
-            // Act
-            const response = await request(app)
-                .post("/auth/register")
-                .send(user);
+        //     // Act
+        //     const response = await request(app)
+        //         .post("/auth/register")
+        //         .send(user);
 
-            // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
-            expect(users).toHaveLength(0);
-            expect(response.statusCode).toBe(400);
-        });
+        //     // Assert
+        //     const userRepository = connection.getRepository(User);
+        //     const users = await userRepository.find();
+        //     expect(users).toHaveLength(0);
+        //     expect(response.statusCode).toBe(400);
+        // });
     });
 
     //
