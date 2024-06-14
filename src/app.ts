@@ -4,7 +4,6 @@ import authRouter from "./Auth/authRoute";
 import { globalErrorHandler } from "./common/middlewares/globalErrorHandler";
 
 const app = express();
-// TODO: cookie parser
 
 app.use(express.json());
 
