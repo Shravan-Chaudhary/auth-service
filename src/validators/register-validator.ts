@@ -9,4 +9,26 @@ export default checkSchema({
             errorMessage: "Invalid email",
         },
     },
+    firstName: {
+        trim: true,
+        notEmpty: true,
+        errorMessage: "First name is required",
+    },
+
+    lastName: {
+        trim: true,
+        notEmpty: true,
+        errorMessage: "First name is required",
+    },
+    password: {
+        trim: true,
+        notEmpty: true,
+        errorMessage: "First name is required",
+        isLength: {
+            options: {
+                min: 8,
+            },
+            errorMessage: "Password must be at least 8 characters long",
+        },
+    },
 });
