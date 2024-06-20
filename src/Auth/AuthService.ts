@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 import { User } from "../entity/User";
 import { UserData } from "../types";
 import { Repository } from "typeorm";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export interface IAuthService {
     create(userData: UserData): Promise<User>;

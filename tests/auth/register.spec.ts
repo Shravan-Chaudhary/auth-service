@@ -145,7 +145,7 @@ describe("POST /auth/register", () => {
 
             // hash is made up of (algo, cost, salt, hash). Idea is to match the starting expression
             expect(users[0].password).toHaveLength(60); // 60 is the length of the hash
-            expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
+            expect(users[0].password).toMatch(/^\$2[a|b]\$\d+\$/);
         });
 
         it("should return 409 status code if email aldready exists", async () => {
