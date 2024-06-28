@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import express, { Request, Response } from "express";
-import authRouter from "./Auth/authRoute";
+import authRouter from "./modules/Auth/authRoute";
 import { globalErrorHandler } from "./common/middlewares/globalErrorHandler";
 
 const app = express();

@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { RegisterUserRequest } from "../types";
+import { RegisterUserRequest } from "../../types";
 import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
