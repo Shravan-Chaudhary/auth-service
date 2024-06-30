@@ -38,7 +38,7 @@ export class AuthController implements IAuthController {
         });
 
         try {
-            const user = await this.authService.create({
+            const user = await this.authService.register({
                 firstName,
                 lastName,
                 email,
