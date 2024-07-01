@@ -3,9 +3,9 @@ import { User } from "../../entity/User";
 import bcrypt from "bcryptjs";
 import { UserData } from "../../types";
 import {
-    conflictError,
-    creationError,
-} from "../../common/errors/custom-errors";
+    createConflictError,
+    createDatabaseError,
+} from "../../common/errors/http-exceptions";
 
 interface IUserService {}
 
@@ -28,7 +28,7 @@ export class UserService implements IUserService {
         });
 
         if (userExists) {
-            throw conflictError("user already exists");
+            throw createConflictError("user already exists");
         }
 
         const saltRounds = 10;
@@ -43,7 +43,7 @@ export class UserService implements IUserService {
                 role: "customer",
             });
         } catch (error) {
-            throw creationError("error while creating user");
+            throw createDatabaseError("error while creating user");
         }
     }
 }

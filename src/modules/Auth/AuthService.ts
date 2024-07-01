@@ -4,10 +4,7 @@ import { UserData } from "../../types";
 import { Repository } from "typeorm";
 import { UserService } from "../User/UserService";
 import createHttpError from "http-errors";
-import {
-    creationError,
-    unexpectedError,
-} from "../../common/errors/custom-errors";
+import { createBadRequestError } from "../../common/errors/http-exceptions";
 
 export interface IAuthService {
     register(userData: UserData): Promise<User>;
@@ -30,7 +27,7 @@ export class AuthService implements IAuthService {
             if (error instanceof createHttpError.HttpError) {
                 throw error;
             }
-            throw unexpectedError();
+            throw createBadRequestError();
         }
     }
     login(email: string): Promise<User> {
