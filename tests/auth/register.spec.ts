@@ -280,9 +280,39 @@ describe("POST /auth/register", () => {
             expect(users[0].email).toBe("shravan@gmail.com");
         });
 
-        it.todo("should return 400 status code if email is not valid");
-        it.todo(
-            "should return 400 status code if password length is less than 6 characters",
-        );
+        it("should return 400 status code if email is not valid", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
+        it("should return 400 status code if password length is less than 6 characters", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan",
+                password: "pass",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
     });
 });
