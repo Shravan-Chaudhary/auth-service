@@ -26,7 +26,7 @@ export default checkSchema({
         errorMessage: "First name is required",
         isLength: {
             options: {
-                min: 8,
+                min: 6,
             },
             errorMessage: "Password must be at least 8 characters long",
         },

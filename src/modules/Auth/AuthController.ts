@@ -30,6 +30,8 @@ export class AuthController implements IAuthController {
         }
 
         const { firstName, lastName, email, password } = req.body;
+
+        // Debugging
         this.logger.debug("request to register a user: ", {
             firstName,
             lastName,
