@@ -30,10 +30,10 @@ export class AuthService implements IAuthService {
             throw createBadRequestError();
         }
     }
-    login(email: string): Promise<User> {
+    public async login(email: string): Promise<User> {
         throw new Error("Method not implemented.");
     }
-    logout(userId: number): Promise<User> {
+    public async logout(userId: number): Promise<User> {
         throw new Error("Method not implemented.");
     }
 }

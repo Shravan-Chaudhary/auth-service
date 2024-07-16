@@ -7,7 +7,11 @@ import {
     createDatabaseError,
 } from "../../common/errors/http-exceptions";
 
-interface IUserService {}
+interface IUserService {
+    create({ firstName, lastName, email, password }: UserData): Promise<User>;
+    findOne(): Promise<User>;
+    findAll(): Promise<User[]>;
+}
 
 export class UserService implements IUserService {
     userRepository: Repository<User>;
@@ -45,5 +49,11 @@ export class UserService implements IUserService {
         } catch (error) {
             throw createDatabaseError("error while creating user");
         }
+    }
+    findOne(): Promise<User> {
+        throw new Error("Method not implemented.");
+    }
+    findAll(): Promise<User[]> {
+        throw new Error("Method not implemented.");
     }
 }

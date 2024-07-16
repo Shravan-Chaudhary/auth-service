@@ -3,6 +3,7 @@ import { RegisterUserRequest } from "../../types";
 import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
+import { ONE_HOUR, ONE_YEAR } from "../../constants";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -46,7 +47,24 @@ export class AuthController implements IAuthController {
                 email,
                 password,
             });
-            this.logger.info("user created with id: ", user.id);
+            this.logger.info("user registered with id: ", user.id);
+
+            const accessToken = "ahsdflaksfalsdkf";
+            const refreshToken = "ahsdflaksfalsdkf";
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: ONE_HOUR,
+                httpOnly: true,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: ONE_YEAR,
+                httpOnly: true,
+            });
             res.status(201).json({ id: user.id });
         } catch (error) {
             next(error);
