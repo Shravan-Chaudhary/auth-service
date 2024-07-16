@@ -3,6 +3,7 @@ import app from "../../src/app";
 import { DataSource } from "typeorm";
 import AppDataSourse from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
+import { isValidJwt } from "../../src/utils";
 
 describe("POST /auth/register", () => {
     let connection: DataSource;
@@ -208,6 +209,45 @@ describe("POST /auth/register", () => {
 
             expect(accessToken).not.toBeNull();
             expect(refreshToken).not.toBeNull();
+        });
+
+        it("should be a valid jwt token", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            interface Headers {
+                ["set-cookie"]: string[];
+            }
+
+            // Assert
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
+
+            const cookies =
+                (response.headers as unknown as Headers)["set-cookie"] || [];
+
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith("accessToken=")) {
+                    accessToken = cookie.split(";")[0].split("=")[1];
+                }
+
+                if (cookie.startsWith("accessToken=")) {
+                    refreshToken = cookie.split(";")[0].split("=")[1];
+                }
+            });
+
+            expect(isValidJwt(accessToken)).toBe(true);
+            expect(isValidJwt(refreshToken)).toBe(true);
         });
     });
 
