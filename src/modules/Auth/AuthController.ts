@@ -5,8 +5,6 @@ import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR } from "../../constants";
 import { JwtPayload, sign } from "jsonwebtoken";
-import fs from "fs";
-import path from "path";
 import { createInternalServerError } from "../../common/errors/http-exceptions";
 import { Config } from "../../config";
 
@@ -55,11 +53,16 @@ export class AuthController implements IAuthController {
             this.logger.info("user registered with id: ", user.id);
 
             // generate keys and read from keys
-            let privateKey: Buffer;
+            // let privateKey: Buffer;
+            let privateKey: string;
+
+            if (!Config.PRIVATE_KEY) {
+                const err = createInternalServerError("private key not found");
+                next(err);
+                return;
+            }
             try {
-                privateKey = fs.readFileSync(
-                    path.join(__dirname, "../../../certs/private.pem"),
-                );
+                privateKey = Config.PRIVATE_KEY;
             } catch (error) {
                 const err = createInternalServerError(
                     "error while reading private key",
