@@ -4,6 +4,11 @@ import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR } from "../../constants";
+import { JwtPayload, sign } from "jsonwebtoken";
+import fs from "fs";
+import path from "path";
+import { createInternalServerError } from "../../common/errors/http-exceptions";
+import { Config } from "../../config";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -49,8 +54,37 @@ export class AuthController implements IAuthController {
             });
             this.logger.info("user registered with id: ", user.id);
 
-            const accessToken = "ahsdflaksfalsdkf";
-            const refreshToken = "ahsdflaksfalsdkf";
+            // generate keys and read from keys
+            let privateKey: Buffer;
+            try {
+                privateKey = fs.readFileSync(
+                    path.join(__dirname, "../../../certs/private.pem"),
+                );
+            } catch (error) {
+                const err = createInternalServerError(
+                    "error while reading private key",
+                );
+                next(err);
+                return;
+            }
+
+            // generate tokens
+            const payload: JwtPayload = {
+                sub: String(user.id),
+                role: user.role,
+            };
+
+            const accessToken = sign(payload, privateKey, {
+                algorithm: "RS256",
+                expiresIn: "1h",
+                issuer: "auth-service",
+            });
+
+            const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
+                algorithm: "HS256",
+                expiresIn: "1y",
+                issuer: "auth-service",
+            });
 
             res.cookie("accessToken", accessToken, {
                 domain: "localhost",
