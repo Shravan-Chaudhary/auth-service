@@ -3,7 +3,7 @@ import app from "../../src/app";
 import { DataSource } from "typeorm";
 import AppDataSourse from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
-import { isValidJwt } from "../../src/utils";
+import { isValidJwt } from "../utils/index";
 
 describe("POST /auth/register", () => {
     let connection: DataSource;
