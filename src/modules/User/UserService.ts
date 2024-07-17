@@ -1,17 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import createHttpError from "http-errors";
-import { User } from "../entity/User";
-import { UserData } from "../types";
 import { Repository } from "typeorm";
+import { User } from "../../entity/User";
 import bcrypt from "bcryptjs";
+import { UserData } from "../../types";
+import {
+    createConflictError,
+    createDatabaseError,
+} from "../../common/errors/http-exceptions";
 
-export interface IAuthService {
-    create(userData: UserData): Promise<User>;
-    findByEmailWithPassword(email: string): Promise<User>;
-    findById(userId: number): Promise<User>;
+interface IUserService {
+    create({ firstName, lastName, email, password }: UserData): Promise<User>;
+    findOne(): Promise<User>;
+    findAll(): Promise<User[]>;
 }
 
-export class AuthService implements IAuthService {
+export class UserService implements IUserService {
     userRepository: Repository<User>;
     constructor(userRepository: Repository<User>) {
         this.userRepository = userRepository;
@@ -30,8 +32,7 @@ export class AuthService implements IAuthService {
         });
 
         if (userExists) {
-            const err = createHttpError(409, "user already exists");
-            throw err;
+            throw createConflictError("user already exists");
         }
 
         const saltRounds = 10;
@@ -46,15 +47,13 @@ export class AuthService implements IAuthService {
                 role: "customer",
             });
         } catch (error) {
-            const err = createHttpError(500, "error while creating user");
-            throw err;
+            throw createDatabaseError("error while creating user");
         }
     }
-
-    findByEmailWithPassword(email: string): Promise<User> {
+    findOne(): Promise<User> {
         throw new Error("Method not implemented.");
     }
-    findById(userId: number): Promise<User> {
+    findAll(): Promise<User[]> {
         throw new Error("Method not implemented.");
     }
 }

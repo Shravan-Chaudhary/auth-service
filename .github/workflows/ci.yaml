@@ -27,9 +27,9 @@ jobs:
                   DATABASE_USERNAME: ${{ secrets.DB_USERNAME }}
                   DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
                   DATABASE_NAME: ${{ secrets.DB_NAME }}
-                  #REFRESH_TOKEN_SECRET:
+                  REFRESH_TOKEN_SECRET: ${{secrets.REFRESH_TOKEN_SECRET}}
                   #JWKS_URI:
-                  #PRIVATE_KEY:
+                  PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
             - name: Build
               run: npm run build
             - name: Sonar Cloud Scan

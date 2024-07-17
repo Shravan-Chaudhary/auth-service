@@ -3,6 +3,7 @@ import app from "../../src/app";
 import { DataSource } from "typeorm";
 import AppDataSourse from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
+import { isValidJwt } from "../utils/index";
 
 describe("POST /auth/register", () => {
     let connection: DataSource;
@@ -170,6 +171,84 @@ describe("POST /auth/register", () => {
             expect(response.statusCode).toBe(409);
             expect(users).toHaveLength(1);
         });
+
+        it("should return the access token and refresh token inside a cookie", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            interface Headers {
+                ["set-cookie"]: string[];
+            }
+
+            // Assert
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
+
+            const cookies =
+                (response.headers as unknown as Headers)["set-cookie"] || [];
+
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith("accessToken=")) {
+                    accessToken = cookie.split(";")[0].split("=")[1];
+                }
+
+                if (cookie.startsWith("accessToken=")) {
+                    refreshToken = cookie.split(";")[0].split("=")[1];
+                }
+            });
+
+            expect(accessToken).not.toBeNull();
+            expect(refreshToken).not.toBeNull();
+        });
+
+        it("should be a valid jwt token", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            interface Headers {
+                ["set-cookie"]: string[];
+            }
+
+            // Assert
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
+
+            const cookies =
+                (response.headers as unknown as Headers)["set-cookie"] || [];
+
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith("accessToken=")) {
+                    accessToken = cookie.split(";")[0].split("=")[1];
+                }
+
+                if (cookie.startsWith("accessToken=")) {
+                    refreshToken = cookie.split(";")[0].split("=")[1];
+                }
+            });
+
+            expect(isValidJwt(accessToken)).toBe(true);
+            expect(isValidJwt(refreshToken)).toBe(true);
+        });
     });
 
     // Sad path
@@ -280,9 +359,39 @@ describe("POST /auth/register", () => {
             expect(users[0].email).toBe("shravan@gmail.com");
         });
 
-        it.todo("should return 400 status code if email is not valid");
-        it.todo(
-            "should return 400 status code if password length is less than 6 characters",
-        );
+        it("should return 400 status code if email is not valid", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan",
+                password: "password",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
+        it("should return 400 status code if password length is less than 6 characters", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan",
+                password: "pass",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
     });
 });
