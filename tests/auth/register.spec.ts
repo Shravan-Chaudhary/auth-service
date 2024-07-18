@@ -261,14 +261,22 @@ describe("POST /auth/register", () => {
             };
 
             // Act
-            await request(app).post("/auth/register").send(user);
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
 
             // Assert
             const refreshTokenRepository =
                 connection.getRepository(RefreshToken);
-            const refreshTokens = await refreshTokenRepository.find();
 
-            expect(refreshTokens).toHaveLength(1);
+            const tokens = await refreshTokenRepository
+                .createQueryBuilder("refreshToken")
+                .where("refreshToken.userId = :userId", {
+                    userId: (response.body as Record<string, string>).id,
+                })
+                .getMany();
+
+            expect(tokens).toHaveLength(1);
         });
     });
 
