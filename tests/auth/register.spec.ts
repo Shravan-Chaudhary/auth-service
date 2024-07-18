@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import AppDataSourse from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
 import { isValidJwt } from "../utils/index";
+import { RefreshToken } from "../../src/entity/RefreshToken";
 
 describe("POST /auth/register", () => {
     let connection: DataSource;
@@ -248,6 +249,26 @@ describe("POST /auth/register", () => {
 
             expect(isValidJwt(accessToken)).toBe(true);
             expect(isValidJwt(refreshToken)).toBe(true);
+        });
+
+        it("should store refresh token in database", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+            };
+
+            // Act
+            await request(app).post("/auth/register").send(user);
+
+            // Assert
+            const refreshTokenRepository =
+                connection.getRepository(RefreshToken);
+            const refreshTokens = await refreshTokenRepository.find();
+
+            expect(refreshTokens).toHaveLength(1);
         });
     });
 
