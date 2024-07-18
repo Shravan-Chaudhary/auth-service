@@ -7,6 +7,8 @@ import { ONE_HOUR, ONE_YEAR } from "../../constants";
 import { JwtPayload, sign } from "jsonwebtoken";
 import { createInternalServerError } from "../../common/errors/http-exceptions";
 import { Config } from "../../config";
+import AppDataSource from "../../config/data-source";
+import { RefreshToken } from "../../entity/RefreshToken";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -83,10 +85,20 @@ export class AuthController implements IAuthController {
                 issuer: "auth-service",
             });
 
+            // store refresh token record
+            const refreshTokenRepository =
+                AppDataSource.getRepository(RefreshToken);
+
+            const refreshTokenRecord = await refreshTokenRepository.save({
+                userId: user,
+                expiresAt: new Date(Date.now() + ONE_YEAR),
+            });
+
             const refreshToken = sign(payload, Config.REFRESH_TOKEN_SECRET!, {
                 algorithm: "HS256",
                 expiresIn: "1y",
                 issuer: "auth-service",
+                jwtid: String(refreshTokenRecord.id),
             });
 
             res.cookie("accessToken", accessToken, {
@@ -102,6 +114,7 @@ export class AuthController implements IAuthController {
                 maxAge: ONE_YEAR,
                 httpOnly: true,
             });
+
             res.status(201).json({ id: user.id });
         } catch (error) {
             next(error);
