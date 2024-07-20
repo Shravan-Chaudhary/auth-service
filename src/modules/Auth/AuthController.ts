@@ -3,13 +3,17 @@ import { RegisterUserRequest } from "../../types";
 import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
-import { ONE_HOUR, ONE_YEAR } from "../../constants";
+import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
 import { Http } from "../../common/enums/http-codes";
+import { createBadRequestError } from "../../common/errors/http-exceptions";
+import createHttpError from "http-errors";
+import { setCookie } from "../../utils";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
+    login(req: RegisterUserRequest, res: Response, next: NextFunction): void;
 }
 
 export class AuthController implements IAuthController {
@@ -26,6 +30,7 @@ export class AuthController implements IAuthController {
         this.tokenService = tokenService;
         this.logger = logger;
     }
+
     public async register(
         req: RegisterUserRequest,
         res: Response,
@@ -55,6 +60,7 @@ export class AuthController implements IAuthController {
                 lastName,
                 email,
                 password,
+                role: Roles.CUSTOMER,
             });
             this.logger.info("user registered with id: ", user.id);
 
@@ -90,6 +96,52 @@ export class AuthController implements IAuthController {
             res.status(Http.CREATED).json({ id: user.id });
         } catch (error) {
             next(error);
+            return;
+        }
+    }
+
+    public async login(
+        req: RegisterUserRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            res.status(Http.BAD_REQUEST).json({ errors: result.array() });
+            return;
+        }
+
+        const { email, password } = req.body;
+
+        try {
+            const user = await this.authService.validate(email, password);
+            // generate access token & refresh token
+            const payload: JwtPayload = {
+                sub: String(user.id),
+                role: user.role,
+            };
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            const refreshTokenRecord =
+                await this.tokenService.persistRefreshToken(user);
+
+            const refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                id: refreshTokenRecord.id,
+            });
+
+            // send cookies
+            setCookie(res, "accessToken", accessToken, ONE_HOUR);
+            setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
+
+            res.status(Http.OK).json({ id: user.id });
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(createBadRequestError("email or password does not match"));
             return;
         }
     }
