@@ -1,21 +1,27 @@
 import { Repository } from "typeorm";
 import { User } from "../../entity/User";
-import bcrypt from "bcryptjs";
 import { UserData } from "../../types";
 import {
     createConflictError,
     createDatabaseError,
+    createUnauthorizedError,
 } from "../../common/errors/http-exceptions";
+import { CredentialService } from "../Credentials/CredentialService";
 
 interface IUserService {
     create({ firstName, lastName, email, password }: UserData): Promise<User>;
-    findOne(): Promise<User>;
+    findOneByEmail(email: string): Promise<User>;
     findAll(): Promise<User[]>;
 }
 
 export class UserService implements IUserService {
+    credentialService: CredentialService;
     userRepository: Repository<User>;
-    constructor(userRepository: Repository<User>) {
+    constructor(
+        credentialService: CredentialService,
+        userRepository: Repository<User>,
+    ) {
+        this.credentialService = credentialService;
         this.userRepository = userRepository;
     }
 
@@ -24,6 +30,7 @@ export class UserService implements IUserService {
         lastName,
         email,
         password,
+        role,
     }: UserData): Promise<User> {
         const userExists = await this.userRepository.findOne({
             where: {
@@ -35,8 +42,8 @@ export class UserService implements IUserService {
             throw createConflictError("user already exists");
         }
 
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword =
+            await this.credentialService.hashPassword(password);
 
         try {
             return await this.userRepository.save({
@@ -44,14 +51,23 @@ export class UserService implements IUserService {
                 lastName,
                 email,
                 password: hashedPassword,
-                role: "customer",
+                role: role,
             });
         } catch (error) {
-            throw createDatabaseError("error while creating user");
+            throw createDatabaseError("error while saving user in database");
         }
     }
-    findOne(): Promise<User> {
-        throw new Error("Method not implemented.");
+    public async findOneByEmail(email: string): Promise<User> {
+        const user = await this.userRepository.findOne({
+            where: {
+                email: email,
+            },
+        });
+        if (!user) {
+            throw createUnauthorizedError("email or password does not match");
+        }
+
+        return user;
     }
     findAll(): Promise<User[]> {
         throw new Error("Method not implemented.");
