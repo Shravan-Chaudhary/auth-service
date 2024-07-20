@@ -11,7 +11,7 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Hello World!");
 });
 
-app.use("/auth", authRouter);
+app.use("/api/v1/auth", authRouter);
 
 app.use(globalErrorHandler);
 

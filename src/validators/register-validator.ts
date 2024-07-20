@@ -18,12 +18,12 @@ export default checkSchema({
     lastName: {
         trim: true,
         notEmpty: true,
-        errorMessage: "First name is required",
+        errorMessage: "Last name is required",
     },
     password: {
         trim: true,
         notEmpty: true,
-        errorMessage: "First name is required",
+        errorMessage: "Password is required",
         isLength: {
             options: {
                 min: 6,
