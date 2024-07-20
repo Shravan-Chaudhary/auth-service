@@ -6,6 +6,7 @@ import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
+import { Http } from "../../common/enums/http-codes";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -34,7 +35,7 @@ export class AuthController implements IAuthController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
-            res.status(400).json({ errors: result.array() });
+            res.status(Http.BAD_REQUEST).json({ errors: result.array() });
             return;
         }
 
@@ -86,7 +87,7 @@ export class AuthController implements IAuthController {
                 httpOnly: true,
             });
 
-            res.status(201).json({ id: user.id });
+            res.status(Http.CREATED).json({ id: user.id });
         } catch (error) {
             next(error);
             return;
