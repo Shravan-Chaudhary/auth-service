@@ -1,5 +1,5 @@
-import { NextFunction, Response } from "express";
-import { RegisterUserRequest } from "../../types";
+import { NextFunction, Request, Response } from "express";
+import { LoginUserRequest, RegisterUserRequest } from "../../types";
 import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
@@ -13,7 +13,8 @@ import { setCookie } from "../../utils";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
-    login(req: RegisterUserRequest, res: Response, next: NextFunction): void;
+    login(req: LoginUserRequest, res: Response, next: NextFunction): void;
+    self(req: Request, res: Response, next: NextFunction): void;
 }
 
 export class AuthController implements IAuthController {
@@ -144,5 +145,9 @@ export class AuthController implements IAuthController {
             next(createBadRequestError("email or password does not match"));
             return;
         }
+    }
+
+    public async self(_req: Request, res: Response) {
+        res.json({ message: "hello" });
     }
 }
