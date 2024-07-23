@@ -10,7 +10,7 @@ import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
-import { Http } from "../../common/enums/http-codes";
+import { HttpStatus } from "../../common/enums/http-codes";
 import {
     createBadRequestError,
     createInternalServerError,
@@ -52,7 +52,7 @@ export class AuthController implements IAuthController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
-            res.status(Http.BAD_REQUEST).json({ errors: result.array() });
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
             return;
         }
 
@@ -105,7 +105,7 @@ export class AuthController implements IAuthController {
                 httpOnly: true,
             });
 
-            res.status(Http.CREATED).json({ id: user.id });
+            res.status(HttpStatus.CREATED).json({ id: user.id });
         } catch (error) {
             next(error);
             return;
@@ -120,7 +120,7 @@ export class AuthController implements IAuthController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
-            res.status(Http.BAD_REQUEST).json({ errors: result.array() });
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
             return;
         }
 
@@ -147,7 +147,7 @@ export class AuthController implements IAuthController {
             setCookie(res, "accessToken", accessToken, ONE_HOUR);
             setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
 
-            res.status(Http.OK).json({ id: user.id });
+            res.status(HttpStatus.OK).json({ id: user.id });
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -163,7 +163,7 @@ export class AuthController implements IAuthController {
 
         try {
             const user = await this.userService.findOneById(Number(sub));
-            res.status(Http.OK).json({ ...user, password: undefined });
+            res.status(HttpStatus.OK).json({ ...user, password: undefined });
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
