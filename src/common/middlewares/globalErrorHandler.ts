@@ -12,7 +12,7 @@ export const globalErrorHandler = (
 ) => {
     const errorId = uuidv4();
 
-    const statusCode = err.status || 500;
+    const statusCode = err.status || err.statusCode || 500;
     const isProduction = process.env.NODE_ENV === "production";
     const message = isProduction
         ? `An unexpected error occurred.`

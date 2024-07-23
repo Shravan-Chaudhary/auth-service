@@ -1,3 +1,7 @@
+# dev requirements
+certs/
+public/
+
 # Logs
 logs
 *.log
@@ -71,8 +75,8 @@ web_modules/
 # Output of 'npm pack'
 *.tgz
 
-certs/
-public/
+# vscode files
+.vscode/
 
 # Yarn Integrity file
 .yarn-integrity

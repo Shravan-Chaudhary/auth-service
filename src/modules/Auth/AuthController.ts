@@ -1,32 +1,44 @@
-import { NextFunction, Response } from "express";
-import { RegisterUserRequest } from "../../types";
+import { NextFunction, Request, Response } from "express";
+import {
+    AuthRequest,
+    LoginUserRequest,
+    RegisterUserRequest,
+} from "../../types";
 import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
-import { Http } from "../../common/enums/http-codes";
-import { createBadRequestError } from "../../common/errors/http-exceptions";
+import { HttpStatus } from "../../common/enums/http-codes";
+import {
+    createBadRequestError,
+    createInternalServerError,
+} from "../../common/errors/http-exceptions";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
+import { IUserService } from "../User/UserService";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
-    login(req: RegisterUserRequest, res: Response, next: NextFunction): void;
+    login(req: LoginUserRequest, res: Response, next: NextFunction): void;
+    self(req: Request, res: Response, next: NextFunction): void;
 }
 
 export class AuthController implements IAuthController {
     authService: IAuthService;
+    userService: IUserService;
     tokenService: TokenService;
     logger: Logger;
 
     constructor(
         authService: IAuthService,
+        userService: IUserService,
         tokenService: TokenService,
         logger: Logger,
     ) {
         this.authService = authService;
+        this.userService = userService;
         this.tokenService = tokenService;
         this.logger = logger;
     }
@@ -40,7 +52,7 @@ export class AuthController implements IAuthController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
-            res.status(Http.BAD_REQUEST).json({ errors: result.array() });
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
             return;
         }
 
@@ -93,7 +105,7 @@ export class AuthController implements IAuthController {
                 httpOnly: true,
             });
 
-            res.status(Http.CREATED).json({ id: user.id });
+            res.status(HttpStatus.CREATED).json({ id: user.id });
         } catch (error) {
             next(error);
             return;
@@ -108,7 +120,7 @@ export class AuthController implements IAuthController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
-            res.status(Http.BAD_REQUEST).json({ errors: result.array() });
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
             return;
         }
 
@@ -135,13 +147,29 @@ export class AuthController implements IAuthController {
             setCookie(res, "accessToken", accessToken, ONE_HOUR);
             setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
 
-            res.status(Http.OK).json({ id: user.id });
+            res.status(HttpStatus.OK).json({ id: user.id });
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
                 return;
             }
             next(createBadRequestError("email or password does not match"));
+            return;
+        }
+    }
+
+    public async self(req: AuthRequest, res: Response, next: NextFunction) {
+        const { sub } = req.auth;
+
+        try {
+            const user = await this.userService.findOneById(Number(sub));
+            res.status(HttpStatus.OK).json({ ...user, password: undefined });
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(createInternalServerError("error while fetching user"));
             return;
         }
     }

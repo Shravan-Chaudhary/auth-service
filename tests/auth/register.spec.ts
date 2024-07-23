@@ -155,7 +155,7 @@ describe("POST /auth/register", () => {
             };
 
             const userRepository = connection.getRepository(User);
-            userRepository.save({ ...user, role: "customer" });
+            await userRepository.save({ ...user, role: "customer" });
 
             // Act
             const response = await request(app).post(URL).send(user);
