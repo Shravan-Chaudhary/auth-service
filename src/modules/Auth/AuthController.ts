@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { LoginUserRequest, RegisterUserRequest } from "../../types";
+import {
+    AuthRequest,
+    LoginUserRequest,
+    RegisterUserRequest,
+} from "../../types";
 import { IAuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
@@ -7,9 +11,13 @@ import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
 import { Http } from "../../common/enums/http-codes";
-import { createBadRequestError } from "../../common/errors/http-exceptions";
+import {
+    createBadRequestError,
+    createInternalServerError,
+} from "../../common/errors/http-exceptions";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
+import { IUserService } from "../User/UserService";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -19,15 +27,18 @@ interface IAuthController {
 
 export class AuthController implements IAuthController {
     authService: IAuthService;
+    userService: IUserService;
     tokenService: TokenService;
     logger: Logger;
 
     constructor(
         authService: IAuthService,
+        userService: IUserService,
         tokenService: TokenService,
         logger: Logger,
     ) {
         this.authService = authService;
+        this.userService = userService;
         this.tokenService = tokenService;
         this.logger = logger;
     }
@@ -147,7 +158,19 @@ export class AuthController implements IAuthController {
         }
     }
 
-    public async self(_req: Request, res: Response) {
-        res.json({ message: "hello" });
+    public async self(req: AuthRequest, res: Response, next: NextFunction) {
+        const { sub } = req.auth;
+
+        try {
+            const user = await this.userService.findOneById(Number(sub));
+            res.status(Http.OK).json({ ...user, password: undefined });
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(createInternalServerError("error while fetching user"));
+            return;
+        }
     }
 }
