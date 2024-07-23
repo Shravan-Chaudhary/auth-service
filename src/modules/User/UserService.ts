@@ -4,13 +4,15 @@ import { UserData } from "../../types";
 import {
     createConflictError,
     createDatabaseError,
+    createNotFoundError,
     createUnauthorizedError,
 } from "../../common/errors/http-exceptions";
 import { CredentialService } from "../Credentials/CredentialService";
 
-interface IUserService {
+export interface IUserService {
     create({ firstName, lastName, email, password }: UserData): Promise<User>;
     findOneByEmail(email: string): Promise<User>;
+    findOneById(id: number): Promise<User>;
     findAll(): Promise<User[]>;
 }
 
@@ -69,6 +71,20 @@ export class UserService implements IUserService {
 
         return user;
     }
+
+    public async findOneById(id: number): Promise<User> {
+        const user = await this.userRepository.findOne({
+            where: {
+                id: id,
+            },
+        });
+        if (!user) {
+            throw createNotFoundError("user not found");
+        }
+
+        return user;
+    }
+
     findAll(): Promise<User[]> {
         throw new Error("Method not implemented.");
     }
