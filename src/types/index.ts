@@ -8,6 +8,10 @@ export interface UserData {
     role: string;
 }
 
+export type AuthCookie = {
+    accessToken: string;
+};
+
 export interface RegisterUserRequest extends Request {
     body: UserData;
 }
@@ -16,5 +20,12 @@ export interface LoginUserRequest extends Request {
     body: {
         email: string;
         password: string;
+    };
+}
+
+export interface AuthRequest extends Request {
+    auth: {
+        sub: string;
+        role: string;
     };
 }
