@@ -86,5 +86,8 @@ describe("GET /auth/self", () => {
             // Assert
             expect((response.body as Record<string, string>).id).toBe(user.id);
         });
+
+        it.todo("should not return password");
+        it.todo("should return 401 status code if token does not exists");
     });
 });
