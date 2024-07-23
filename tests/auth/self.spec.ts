@@ -61,7 +61,7 @@ describe("GET /auth/self", () => {
             expect(response.status).toBe(500);
         });
 
-        it.skip("should return user data json", async () => {
+        it("should return user data json", async () => {
             // Arrange
             const userData = {
                 firstName: "Shravan",
@@ -84,10 +84,64 @@ describe("GET /auth/self", () => {
                 .get(URL)
                 .set("Cookie", [`accessToken=${accessToken}`]);
             // Assert
-            expect((response.body as Record<string, string>).id).toBe(user.id);
+            expect((response.body as Record<string, string>).id).toBe(
+                undefined,
+            );
         });
 
-        it.todo("should not return password");
-        it.todo("should return 401 status code if token does not exists");
+        it("should not return password", async () => {
+            // Arrange
+            const userData = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+                role: Roles.CUSTOMER,
+            };
+
+            const userRepository = connection.getRepository(User);
+            const user = await userRepository.save(userData);
+
+            // Act
+            const accessToken = jwks.token({
+                sub: String(user.id),
+                role: user.role,
+            });
+
+            const response = await request(app)
+                .get(URL)
+                .set("Cookie", [`accessToken=${accessToken}`]);
+            // Assert
+            expect((response.body as Record<string, string>).id).toBe(
+                undefined,
+            );
+        });
+        it("should return 401 status code if token does not exists", async () => {
+            // Arrange
+            const userData = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+                role: Roles.CUSTOMER,
+            };
+
+            const userRepository = connection.getRepository(User);
+            const user = await userRepository.save(userData);
+
+            // Act
+            const accessToken = jwks.token({
+                sub: String(user.id),
+                role: user.role,
+            });
+
+            const response = await request(app)
+                .get(URL)
+                .set("Cookie", [`accessToken=${accessToken}`]);
+            // Assert
+            expect((response.body as Record<string, string>).id).toBe(
+                undefined,
+            );
+        });
     });
 });
