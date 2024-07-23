@@ -35,7 +35,29 @@ describe("GET /auth/self", () => {
     // Happy Path
     describe("Given all fields", () => {
         it("should return 200 status code", async () => {
-            const response = await request(app).get(URL);
+            // Arrange
+            const userData = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+                role: Roles.CUSTOMER,
+            };
+
+            const userRepository = connection.getRepository(User);
+            const user = await userRepository.save(userData);
+
+            // Act
+            const accessToken = jwks.token({
+                sub: String(user.id),
+                role: user.role,
+            });
+
+            const response = await request(app)
+                .get(URL)
+                .set("Cookie", [`accessToken=${accessToken}`]);
+
+            // Assert
             expect(response.status).toBe(200);
         });
 
