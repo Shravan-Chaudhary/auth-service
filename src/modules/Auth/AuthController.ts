@@ -91,19 +91,8 @@ export class AuthController implements IAuthController {
                 id: refreshTokenRecord.id,
             });
 
-            res.cookie("accessToken", accessToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: ONE_HOUR,
-                httpOnly: true,
-            });
-
-            res.cookie("refreshToken", refreshToken, {
-                domain: "localhost",
-                sameSite: "strict",
-                maxAge: ONE_YEAR,
-                httpOnly: true,
-            });
+            setCookie(res, "accessToken", accessToken, ONE_HOUR);
+            setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
 
             res.status(HttpStatus.CREATED).json({ id: user.id });
         } catch (error) {
