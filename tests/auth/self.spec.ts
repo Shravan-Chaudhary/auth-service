@@ -58,7 +58,7 @@ describe("GET /auth/self", () => {
                 .set("Cookie", [`accessToken=${accessToken}`]);
 
             // Assert
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(200);
         });
 
         it("should return user data json", async () => {
@@ -84,9 +84,7 @@ describe("GET /auth/self", () => {
                 .get(URL)
                 .set("Cookie", [`accessToken=${accessToken}`]);
             // Assert
-            expect((response.body as Record<string, string>).id).toBe(
-                undefined,
-            );
+            expect((response.body as Record<string, string>).id).toBe(user.id);
         });
 
         it("should not return password", async () => {
@@ -112,36 +110,14 @@ describe("GET /auth/self", () => {
                 .get(URL)
                 .set("Cookie", [`accessToken=${accessToken}`]);
             // Assert
-            expect((response.body as Record<string, string>).id).toBe(
-                undefined,
-            );
+            expect(response.body.password).not.toBeDefined();
         });
         it("should return 401 status code if token does not exists", async () => {
-            // Arrange
-            const userData = {
-                firstName: "Shravan",
-                lastName: "Chaudhary",
-                email: "shravan@gmail.com",
-                password: "password",
-                role: Roles.CUSTOMER,
-            };
-
-            const userRepository = connection.getRepository(User);
-            const user = await userRepository.save(userData);
-
             // Act
-            const accessToken = jwks.token({
-                sub: String(user.id),
-                role: user.role,
-            });
+            const response = await request(app).get(URL);
 
-            const response = await request(app)
-                .get(URL)
-                .set("Cookie", [`accessToken=${accessToken}`]);
             // Assert
-            expect((response.body as Record<string, string>).id).toBe(
-                undefined,
-            );
+            expect(response.status).toBe(401);
         });
     });
 });
