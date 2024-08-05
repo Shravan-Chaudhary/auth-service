@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import {
     AuthRequest,
+    IRefreshTokenPayload,
     LoginUserRequest,
     RegisterUserRequest,
 } from "../../types";
@@ -14,6 +15,7 @@ import { HttpStatus } from "../../common/enums/http-codes";
 import {
     createBadRequestError,
     createInternalServerError,
+    createNotFoundError,
 } from "../../common/errors/http-exceptions";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
@@ -161,5 +163,47 @@ export class AuthController implements IAuthController {
             next(createInternalServerError("error while fetching user"));
             return;
         }
+    }
+    public async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+        const { sub, role, id } = req.auth;
+
+        try {
+            const user = await this.userService.findOneById(Number(sub));
+
+            if (!user) {
+                next(createNotFoundError("user for this token not found"));
+                return;
+            }
+
+            const payload: JwtPayload = {
+                sub,
+                role,
+            };
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            const refreshTokenRecord =
+                await this.tokenService.persistRefreshToken(user);
+
+            await this.tokenService.deleteRefreshToken(Number(id));
+
+            const refreshTokenPayload: IRefreshTokenPayload = {
+                ...payload,
+                id: String(refreshTokenRecord.id),
+            };
+            const refreshToken =
+                this.tokenService.generateRefreshToken(refreshTokenPayload);
+
+            setCookie(res, "accessToken", accessToken, ONE_HOUR);
+            setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(createInternalServerError("error while refreshing token"));
+            return;
+        }
+
+        res.json({ id: sub });
     }
 }
