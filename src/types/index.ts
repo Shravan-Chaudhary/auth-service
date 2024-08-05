@@ -10,7 +10,12 @@ export interface UserData {
 
 export type AuthCookie = {
     accessToken: string;
+    refreshToken: string;
 };
+
+export interface IRefreshTokenPayload {
+    id: string;
+}
 
 export interface RegisterUserRequest extends Request {
     body: UserData;
@@ -27,5 +32,6 @@ export interface AuthRequest extends Request {
     auth: {
         sub: string;
         role: string;
+        id?: string;
     };
 }
