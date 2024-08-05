@@ -4,29 +4,21 @@ import request from "supertest";
 import app from "../../src/app";
 import { User } from "../../src/entity/User";
 import { RefreshToken } from "../../src/entity/RefreshToken";
-import createJWKSMock, { JWKSMock } from "mock-jwks";
 import { Config } from "../../src/config";
 import { Roles } from "../../src/constants";
 import { sign } from "jsonwebtoken";
 
 describe("POST /auth/refresh", () => {
     let connection: DataSource;
-    let jwks: JWKSMock;
     const URL = "/api/v1/auth/refresh";
 
     beforeAll(async () => {
-        jwks = createJWKSMock("http://localhost:5501");
         connection = await AppDataSource.initialize();
     });
 
     beforeEach(async () => {
-        jwks.start();
         await connection.dropDatabase();
         await connection.synchronize();
-    });
-
-    afterEach(async () => {
-        jwks.stop();
     });
 
     afterAll(async () => {
