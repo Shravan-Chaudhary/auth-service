@@ -15,7 +15,7 @@ describe("POST /auth/refresh", () => {
     const URL = "/api/v1/auth/refresh";
 
     beforeAll(async () => {
-        jwks = createJWKSMock(Config.JWKS_URI!);
+        jwks = createJWKSMock("http://localhost:5501");
         connection = await AppDataSource.initialize();
     });
 
