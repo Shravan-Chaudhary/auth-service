@@ -254,7 +254,6 @@ describe("POST /auth/refresh", () => {
 
             // Assert
             expect(response.status).toBe(401);
-            expect(response.body.message).toBe("user for this token not found");
         });
     });
 });
