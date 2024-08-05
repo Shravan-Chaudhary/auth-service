@@ -51,7 +51,7 @@ describe("POST /auth/refresh", () => {
             const refreshTokenRepository =
                 connection.getRepository(RefreshToken);
             const refreshTokenRecord = await refreshTokenRepository.save({
-                userId: user,
+                user: user,
                 expiresAt: new Date(Date.now() + 3600 * 1000 * 24 * 365),
             });
 
@@ -90,7 +90,7 @@ describe("POST /auth/refresh", () => {
             const refreshTokenRepository =
                 connection.getRepository(RefreshToken);
             const refreshTokenRecord = await refreshTokenRepository.save({
-                userId: user,
+                user: user,
                 expiresAt: new Date(Date.now() + 3600 * 1000 * 24 * 365),
             });
 
@@ -149,7 +149,7 @@ describe("POST /auth/refresh", () => {
             const refreshTokenRepository =
                 connection.getRepository(RefreshToken);
             const refreshTokenRecord = await refreshTokenRepository.save({
-                userId: user,
+                user: user,
                 expiresAt: new Date(Date.now() + 3600 * 1000 * 24 * 365),
             });
 
@@ -191,7 +191,7 @@ describe("POST /auth/refresh", () => {
             const refreshTokenRepository =
                 connection.getRepository(RefreshToken);
             const refreshTokenRecord = await refreshTokenRepository.save({
-                userId: user,
+                user: user,
                 expiresAt: new Date(Date.now() + 3600 * 1000 * 24 * 365),
             });
 

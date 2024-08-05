@@ -258,8 +258,8 @@ describe("POST /auth/register", () => {
 
             const tokens = await refreshTokenRepository
                 .createQueryBuilder("refreshToken")
-                .where("refreshToken.userId = :userId", {
-                    userId: (response.body as Record<string, string>).id,
+                .where("refreshToken.user = :user", {
+                    user: (response.body as Record<string, string>).id,
                 })
                 .getMany();
 

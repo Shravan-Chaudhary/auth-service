@@ -22,7 +22,7 @@ export default expressjwt({
             const refreshToken = await refreshTokenRepository.findOne({
                 where: {
                     id: Number((token?.payload as IRefreshTokenPayload).id),
-                    userId: {
+                    user: {
                         id: Number(token?.payload.sub),
                     },
                 },
