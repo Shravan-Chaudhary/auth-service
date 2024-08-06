@@ -9,8 +9,8 @@
       "build": "tsc",
       "start": "ts-node src/index.ts",
       "start:postgres":"docker run --rm --name auth-pg-container -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -v auth-pg:/var/lib/postgresql/data -p 5432:5432 -d postgres",
-      "createdb:dev": "docker exec auth-pg-container createdb -U root auth_pg_dev",
-      "createdb:test": "docker exec auth-pg-container createdb -U root auth_pg_test",
+      "createdb:dev": "docker exec auth-pg-container createdb -U root auth_pg_data_dev",
+      "createdb:test": "docker exec auth-pg-container createdb -U root auth_pg_data_test",
       "format:check": "prettier . --check",
       "format:fix": "prettier . --write",
       "lint": "eslint .",
@@ -18,7 +18,9 @@
       "prepare": "husky install",
       "test:watch": "jest --watch --runInBand",
       "test": "jest --runInBand",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "migration:generate": "typeorm-ts-node-commonjs migration:generate",
+      "migration:run": "typeorm-ts-node-commonjs migration:run",
+      "migration:create": "typeorm-ts-node-commonjs migration:create"
    },
    "author": "Shravan <shravansinghchaudhary@gmail.com>",
    "license": "ISC",
