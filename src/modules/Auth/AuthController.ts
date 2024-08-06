@@ -206,4 +206,28 @@ export class AuthController implements IAuthController {
 
         res.json({ id: sub });
     }
+
+    public async logout(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            const { sub, id } = req.auth;
+            await this.tokenService.deleteRefreshToken(Number(id));
+
+            this.logger.info("user logged out", {
+                id: sub,
+            });
+
+            //TODO: refactor this
+            res.clearCookie("accessToken");
+            res.clearCookie("refreshToken");
+
+            res.status(HttpStatus.NO_CONTENT).json({});
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(createInternalServerError("error while logging out"));
+            return;
+        }
+    }
 }
