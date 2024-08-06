@@ -216,7 +216,6 @@ export class AuthController implements IAuthController {
                 id: sub,
             });
 
-            //TODO: refactor this
             res.clearCookie("accessToken");
             res.clearCookie("refreshToken");
 
