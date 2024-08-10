@@ -7,7 +7,7 @@
    "scripts": {
       "dev": "cross-env NODE_ENV=development nodemon src/server.ts",
       "build": "tsc",
-      "start": "ts-node src/index.ts",
+      "start": "ts-node src/server.ts",
       "start:postgres":"docker run --rm --name auth-pg-container -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -v auth-pg:/var/lib/postgresql/data -p 5432:5432 -d postgres",
       "createdb:dev": "docker exec auth-pg-container createdb -U root auth_pg_data_dev",
       "createdb:test": "docker exec auth-pg-container createdb -U root auth_pg_data_test",
