@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { createUnauthorizedError } from "../../common/errors/http-exceptions";
 
-export class CredentialService {
+export class CredentialsService {
     async hashPassword(password: string) {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);

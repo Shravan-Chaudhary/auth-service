@@ -7,7 +7,7 @@ import {
     createNotFoundError,
     createUnauthorizedError,
 } from "../../common/errors/http-exceptions";
-import { CredentialService } from "../Credentials/CredentialService";
+import { CredentialsService } from "../Credentials/CredentialsService";
 
 export interface IUserService {
     create({ firstName, lastName, email, password }: UserData): Promise<User>;
@@ -16,11 +16,11 @@ export interface IUserService {
     findAll(): Promise<User[]>;
 }
 
-export class UserService implements IUserService {
-    credentialService: CredentialService;
+export class UsersService implements IUserService {
+    credentialService: CredentialsService;
     userRepository: Repository<User>;
     constructor(
-        credentialService: CredentialService,
+        credentialService: CredentialsService,
         userRepository: Repository<User>,
     ) {
         this.credentialService = credentialService;

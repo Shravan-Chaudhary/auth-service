@@ -19,7 +19,7 @@ import {
 } from "../../common/errors/http-exceptions";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
-import { IUserService } from "../User/UserService";
+import { IUserService } from "../Users/UsersService";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
