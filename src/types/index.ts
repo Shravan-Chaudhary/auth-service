@@ -1,5 +1,6 @@
 import { Request } from "express";
 
+// Input types
 export interface UserData {
     firstName: string;
     lastName: string;
@@ -8,15 +9,23 @@ export interface UserData {
     role: string;
 }
 
+export interface TenantData {
+    name: string;
+    address: string;
+}
+
+// Cookies types
 export type AuthCookie = {
     accessToken: string;
     refreshToken: string;
 };
 
+// Token types
 export interface IRefreshTokenPayload {
     id: string;
 }
 
+// Request types
 export interface RegisterUserRequest extends Request {
     body: UserData;
 }
@@ -34,4 +43,8 @@ export interface AuthRequest extends Request {
         role: string;
         id?: string;
     };
+}
+
+export interface TenantReqeust extends Request {
+    body: TenantData;
 }
