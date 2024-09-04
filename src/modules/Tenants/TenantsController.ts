@@ -17,7 +17,6 @@ export class TenantsController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
-            //TODO: forword this to global error handler for consistent errors
             res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
             return;
         }
@@ -41,9 +40,21 @@ export class TenantsController {
         }
     }
 
-    async getAll(req: Request, res: Response, _next: NextFunction) {
-        const body = req.body;
-        res.json({ gettingAll: body });
+    async getAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const tenants = await this.tenantsService.getAll();
+            res.status(200).json(tenants);
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(
+                CreateHttpError.InternalServerError(
+                    "Error while getting tenants list",
+                ),
+            );
+        }
     }
 
     async getOne(req: Request, res: Response, _next: NextFunction) {

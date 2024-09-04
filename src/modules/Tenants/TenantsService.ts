@@ -5,10 +5,14 @@ import { TenantData } from "../../types";
 export class TenantsService {
     constructor(private tenantsRepository: Repository<Tenant>) {}
 
-    async create({ name, address }: TenantData): Promise<Tenant> {
+    public async create({ name, address }: TenantData): Promise<Tenant> {
         return await this.tenantsRepository.save({
             name,
             address,
         });
+    }
+
+    public async getAll(): Promise<Tenant[]> {
+        return await this.tenantsRepository.find();
     }
 }
