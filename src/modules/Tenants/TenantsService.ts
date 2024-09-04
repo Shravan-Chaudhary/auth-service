@@ -1,16 +1,22 @@
 import { Repository } from "typeorm";
 import { Tenant } from "../../entity/Tenant";
-import { TenantData } from "../../types";
+import { ITenantData } from "../../types";
 import CreateHttpError from "../../common/errors/http-exceptions";
 
 export class TenantsService {
     constructor(private tenantsRepository: Repository<Tenant>) {}
 
-    public async create({ name, address }: TenantData): Promise<Tenant> {
-        return await this.tenantsRepository.save({
-            name,
-            address,
-        });
+    public async create(tenantData: ITenantData): Promise<Tenant> {
+        return await this.tenantsRepository.save(tenantData);
+    }
+
+    public async update(id: number, tenantData: ITenantData) {
+        const tenant = await this.tenantsRepository.update(id, tenantData);
+
+        if (!tenant) {
+            throw CreateHttpError.NotFoundError("No tenant found with this id");
+        }
+        return tenant;
     }
 
     public async getAll(): Promise<Tenant[]> {
@@ -25,9 +31,7 @@ export class TenantsService {
         });
 
         if (!tenant) {
-            throw CreateHttpError.NotFoundError(
-                "Tenant not found with provided id",
-            );
+            throw CreateHttpError.NotFoundError("No tenant found with this id");
         }
 
         return tenant;

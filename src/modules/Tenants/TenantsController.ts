@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
 import { TenantsService } from "./TenantsService";
 import { Logger } from "winston";
-import { TenantReqeust } from "../../types";
+import { CreateTenantRequest, UpdateTenantRequest } from "../../types";
 import CreateHttpError from "../../common/errors/http-exceptions";
 import { HttpStatus } from "../../common/enums/http-codes";
 import { validationResult } from "express-validator";
@@ -13,7 +13,11 @@ export class TenantsController {
         private logger: Logger,
     ) {}
 
-    async create(req: TenantReqeust, res: Response, next: NextFunction) {
+    public async create(
+        req: CreateTenantRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
@@ -40,10 +44,40 @@ export class TenantsController {
         }
     }
 
-    async getAll(req: Request, res: Response, next: NextFunction) {
+    public async update(
+        req: UpdateTenantRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
+            return;
+        }
+        const { name, address } = req.body;
+        const { id } = req.params;
+
+        try {
+            const tenant = this.tenantsService.update(+id, { name, address });
+            res.status(HttpStatus.OK).json(tenant);
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(
+                CreateHttpError.InternalServerError(
+                    "Error while updating tenant",
+                ),
+            );
+        }
+    }
+
+    public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const tenants = await this.tenantsService.getAll();
-            res.status(200).json(tenants);
+            res.status(HttpStatus.OK).json(tenants);
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -61,7 +95,7 @@ export class TenantsController {
         const { id } = req.params;
         try {
             const tenant = await this.tenantsService.getOneById(+id);
-            res.status(200).json(tenant);
+            res.status(HttpStatus.OK).json(tenant);
         } catch (error) {
             next(error);
         }

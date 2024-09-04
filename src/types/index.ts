@@ -9,7 +9,7 @@ export interface UserData {
     role: string;
 }
 
-export interface TenantData {
+export interface ITenantData {
     name: string;
     address: string;
 }
@@ -45,6 +45,10 @@ export interface AuthRequest extends Request {
     };
 }
 
-export interface TenantReqeust extends Request {
-    body: TenantData;
+export interface CreateTenantRequest extends Request {
+    body: ITenantData;
+}
+
+export interface UpdateTenantRequest extends Request {
+    body: ITenantData;
 }
