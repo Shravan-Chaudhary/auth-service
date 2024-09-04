@@ -4,6 +4,8 @@ import { TenantsService } from "./TenantsService";
 import { Logger } from "winston";
 import { TenantReqeust } from "../../types";
 import CreateHttpError from "../../common/errors/http-exceptions";
+import { HttpStatus } from "../../common/enums/http-codes";
+import { validationResult } from "express-validator";
 
 export class TenantsController {
     constructor(
@@ -12,6 +14,14 @@ export class TenantsController {
     ) {}
 
     async create(req: TenantReqeust, res: Response, next: NextFunction) {
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            //TODO: forword this to global error handler for consistent errors
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
+            return;
+        }
+
         const { name, address } = req.body;
         try {
             const tenant = await this.tenantsService.create({ name, address });
