@@ -3,11 +3,8 @@ import { UserData } from "../../types";
 import { Repository } from "typeorm";
 import { UsersService } from "../Users/UsersService";
 import createHttpError from "http-errors";
-import {
-    createBadRequestError,
-    createUnauthorizedError,
-} from "../../common/errors/http-exceptions";
 import { CredentialsService } from "../Credentials/CredentialsService";
+import CreateHttpError from "../../common/errors/http-exceptions";
 
 export interface IAuthService {
     register(userData: UserData): Promise<User>;
@@ -36,7 +33,7 @@ export class AuthService implements IAuthService {
             if (error instanceof createHttpError.HttpError) {
                 throw error;
             }
-            throw createBadRequestError();
+            throw CreateHttpError.BadRequestError();
         }
     }
     public async validate(email: string, password: string): Promise<User> {
@@ -53,7 +50,9 @@ export class AuthService implements IAuthService {
             if (error instanceof createHttpError.HttpError) {
                 throw error;
             }
-            throw createUnauthorizedError("email or password does not match");
+            throw CreateHttpError.UnauthorizedError(
+                "email or password does not match",
+            );
         }
     }
     public async logout(userId: number): Promise<User> {

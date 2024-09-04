@@ -1,9 +1,9 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
-import { createInternalServerError } from "../../common/errors/http-exceptions";
 import { TenantsService } from "./TenantsService";
 import { Logger } from "winston";
 import { TenantReqeust } from "../../types";
+import CreateHttpError from "../../common/errors/http-exceptions";
 
 export class TenantsController {
     constructor(
@@ -23,7 +23,21 @@ export class TenantsController {
                 next(error);
                 return;
             }
-            next(createInternalServerError("error while creating tenant"));
+            next(
+                CreateHttpError.InternalServerError(
+                    "error while creating tenant",
+                ),
+            );
         }
+    }
+
+    async getAll(req: Request, res: Response, _next: NextFunction) {
+        const body = req.body;
+        res.json({ gettingAll: body });
+    }
+
+    async getOne(req: Request, res: Response, _next: NextFunction) {
+        const body = req.body;
+        res.json({ gettingOne: body });
     }
 }

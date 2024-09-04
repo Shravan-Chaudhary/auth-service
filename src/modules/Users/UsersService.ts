@@ -1,13 +1,8 @@
 import { Repository } from "typeorm";
 import { User } from "../../entity/User";
 import { UserData } from "../../types";
-import {
-    createConflictError,
-    createDatabaseError,
-    createNotFoundError,
-    createUnauthorizedError,
-} from "../../common/errors/http-exceptions";
 import { CredentialsService } from "../Credentials/CredentialsService";
+import CreateHttpError from "../../common/errors/http-exceptions";
 
 export interface IUserService {
     create({ firstName, lastName, email, password }: UserData): Promise<User>;
@@ -41,7 +36,7 @@ export class UsersService implements IUserService {
         });
 
         if (userExists) {
-            throw createConflictError("user already exists");
+            throw CreateHttpError.ConflictError("user already exists");
         }
 
         const hashedPassword =
@@ -56,7 +51,9 @@ export class UsersService implements IUserService {
                 role: role,
             });
         } catch (error) {
-            throw createDatabaseError("error while saving user in database");
+            throw CreateHttpError.DatabaseError(
+                "error while saving user in database",
+            );
         }
     }
     public async findOneByEmail(email: string): Promise<User> {
@@ -66,7 +63,9 @@ export class UsersService implements IUserService {
             },
         });
         if (!user) {
-            throw createUnauthorizedError("email or password does not match");
+            throw CreateHttpError.UnauthorizedError(
+                "email or password does not match",
+            );
         }
 
         return user;
@@ -79,7 +78,7 @@ export class UsersService implements IUserService {
             },
         });
         if (!user) {
-            throw createNotFoundError("user not found");
+            throw CreateHttpError.NotFoundError("user not found");
         }
 
         return user;

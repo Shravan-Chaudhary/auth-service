@@ -12,14 +12,10 @@ import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
 import { HttpStatus } from "../../common/enums/http-codes";
-import {
-    createBadRequestError,
-    createInternalServerError,
-    createNotFoundError,
-} from "../../common/errors/http-exceptions";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
 import { IUserService } from "../Users/UsersService";
+import CreateHttpError from "../../common/errors/http-exceptions";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -98,7 +94,11 @@ export class AuthController implements IAuthController {
 
             res.status(HttpStatus.CREATED).json({ id: user.id });
         } catch (error) {
-            next(error);
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(CreateHttpError.BadRequestError());
             return;
         }
     }
@@ -144,7 +144,7 @@ export class AuthController implements IAuthController {
                 next(error);
                 return;
             }
-            next(createBadRequestError("email or password does not match"));
+            next(CreateHttpError.BadRequestError());
             return;
         }
     }
@@ -160,7 +160,7 @@ export class AuthController implements IAuthController {
                 next(error);
                 return;
             }
-            next(createInternalServerError("error while fetching user"));
+            next(CreateHttpError.InternalServerError());
             return;
         }
     }
@@ -171,7 +171,11 @@ export class AuthController implements IAuthController {
             const user = await this.userService.findOneById(Number(sub));
 
             if (!user) {
-                next(createNotFoundError("user for this token not found"));
+                next(
+                    CreateHttpError.NotFoundError(
+                        "user for this token not found",
+                    ),
+                );
                 return;
             }
 
@@ -200,7 +204,7 @@ export class AuthController implements IAuthController {
                 next(error);
                 return;
             }
-            next(createInternalServerError("error while refreshing token"));
+            next(CreateHttpError.InternalServerError());
             return;
         }
 
@@ -225,7 +229,7 @@ export class AuthController implements IAuthController {
                 next(error);
                 return;
             }
-            next(createInternalServerError("error while logging out"));
+            next(CreateHttpError.InternalServerError());
             return;
         }
     }

@@ -1,10 +1,10 @@
 import { JwtPayload, sign } from "jsonwebtoken";
 import { Config } from "../../config";
-import { createInternalServerError } from "../../common/errors/http-exceptions";
 import { RefreshToken } from "../../entity/RefreshToken";
 import { Repository } from "typeorm";
 import { User } from "../../entity/User";
 import { ONE_YEAR } from "../../constants";
+import CreateHttpError from "../../common/errors/http-exceptions";
 
 export class TokenService {
     refreshTokenRepository: Repository<RefreshToken>;
@@ -17,13 +17,15 @@ export class TokenService {
 
         // Read private key from file later
         if (!Config.PRIVATE_KEY) {
-            const err = createInternalServerError("private key not found");
+            const err = CreateHttpError.InternalServerError(
+                "private key not found",
+            );
             throw err;
         }
         try {
             privateKey = Config.PRIVATE_KEY;
         } catch (error) {
-            const err = createInternalServerError(
+            const err = CreateHttpError.InternalServerError(
                 "error while reading private key",
             );
             throw err;
