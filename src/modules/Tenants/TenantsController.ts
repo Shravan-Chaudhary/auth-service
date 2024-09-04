@@ -57,8 +57,13 @@ export class TenantsController {
         }
     }
 
-    async getOne(req: Request, res: Response, _next: NextFunction) {
-        const body = req.body;
-        res.json({ gettingOne: body });
+    public async getOne(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params;
+        try {
+            const tenant = await this.tenantsService.getOneById(+id);
+            res.status(200).json(tenant);
+        } catch (error) {
+            next(error);
+        }
     }
 }
