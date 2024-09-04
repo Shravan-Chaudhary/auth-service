@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/dev/Dockerfile
+        container_name: auth-service-container
+        ports:
+            - "5501:5501"
+        environment:
+            - NODE_ENV=development
+            - DATABASE_HOST=auth-pg-container
+        depends_on:
+            - db
+        volumes:
+            - .:/app
+            - /app/node_modules
+        env_file:
+            - .env.development
+        command: sh -c "npm run migration:run -- -d src/config/data-source.ts && npm run dev"
+
+    db:
+        image: postgres
+        container_name: auth-pg-container
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: auth_pg_data_dev
+        volumes:
+            - authpg:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        restart: always
+volumes:
+    authpg:
