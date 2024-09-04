@@ -50,6 +50,7 @@ export class AuthController implements IAuthController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
+            //TODO: forword this to global error handler for consistent errors
             res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
             return;
         }
