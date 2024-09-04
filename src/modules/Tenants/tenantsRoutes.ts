@@ -25,6 +25,14 @@ router.post(
     }) as RequestHandler,
 );
 
+router.get("/", (async (req, res, next) => {
+    await tenantsController.getAll(req, res, next);
+}) as RequestHandler);
+
+router.get("/:id", (async (req, res, next) => {
+    await tenantsController.getOne(req, res, next);
+}) as RequestHandler);
+
 router.patch(
     "/:id",
     authenticate,
@@ -35,12 +43,11 @@ router.patch(
     }) as RequestHandler,
 );
 
-router.get("/", (async (req, res, next) => {
-    await tenantsController.getAll(req, res, next);
+router.delete("/:id", authenticate, canAccess([Roles.ADMIN]), (async (
+    req,
+    res,
+    next,
+) => {
+    await tenantsController.delete(req, res, next);
 }) as RequestHandler);
-
-router.get("/:id", (async (req, res, next) => {
-    await tenantsController.getOne(req, res, next);
-}) as RequestHandler);
-
 export default router;

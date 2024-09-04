@@ -44,36 +44,6 @@ export class TenantsController {
         }
     }
 
-    public async update(
-        req: UpdateTenantRequest,
-        res: Response,
-        next: NextFunction,
-    ) {
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-        const { name, address } = req.body;
-        const { id } = req.params;
-
-        try {
-            const tenant = this.tenantsService.update(+id, { name, address });
-            res.status(HttpStatus.OK).json(tenant);
-        } catch (error) {
-            if (error instanceof createHttpError.HttpError) {
-                next(error);
-                return;
-            }
-            next(
-                CreateHttpError.InternalServerError(
-                    "Error while updating tenant",
-                ),
-            );
-        }
-    }
-
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const tenants = await this.tenantsService.getAll();
@@ -98,6 +68,58 @@ export class TenantsController {
             res.status(HttpStatus.OK).json(tenant);
         } catch (error) {
             next(error);
+        }
+    }
+
+    public async update(
+        req: UpdateTenantRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
+            return;
+        }
+        const { name, address } = req.body;
+        const { id } = req.params;
+
+        try {
+            const tenant = await this.tenantsService.update(+id, {
+                name,
+                address,
+            });
+            res.status(HttpStatus.OK).json(tenant);
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(
+                CreateHttpError.InternalServerError(
+                    "Error while updating tenant",
+                ),
+            );
+        }
+    }
+
+    public async delete(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params;
+
+        try {
+            await this.tenantsService.delete(+id);
+            res.status(204).json();
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(
+                CreateHttpError.InternalServerError(
+                    "Error while deleting tenant",
+                ),
+            );
         }
     }
 }

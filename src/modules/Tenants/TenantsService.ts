@@ -36,4 +36,13 @@ export class TenantsService {
 
         return tenant;
     }
+
+    public async delete(id: number) {
+        const tenant = await this.tenantsRepository.delete(id);
+        if (!tenant) {
+            throw CreateHttpError.NotFoundError("No tenant found with this id");
+        }
+
+        return tenant;
+    }
 }
