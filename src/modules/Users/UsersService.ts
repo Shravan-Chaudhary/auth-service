@@ -36,7 +36,9 @@ export class UsersService implements IUserService {
         });
 
         if (userExists) {
-            throw CreateHttpError.ConflictError("user already exists");
+            throw CreateHttpError.ConflictError(
+                "User already exists with this email",
+            );
         }
 
         const hashedPassword =
@@ -48,7 +50,7 @@ export class UsersService implements IUserService {
                 lastName,
                 email,
                 password: hashedPassword,
-                role: role,
+                role,
             });
         } catch (error) {
             throw CreateHttpError.DatabaseError(
