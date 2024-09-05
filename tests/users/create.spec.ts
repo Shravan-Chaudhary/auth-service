@@ -40,7 +40,6 @@ describe("POST /users", () => {
                 email: "shravan@gmail.com",
                 password: "password",
                 tenantId: 1,
-                role: Roles.MANAGER,
             };
             const adminToken = jwks.token({
                 sub: "1",

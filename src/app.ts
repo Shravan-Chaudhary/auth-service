@@ -2,6 +2,7 @@ import "reflect-metadata";
 import express, { Request, Response } from "express";
 import authRouter from "./modules/Auth/authRoutes";
 import tenantsRouter from "./modules/Tenants/tenantsRoutes";
+import userRouter from "./modules/Users/userRoutes";
 import { globalErrorHandler } from "./common/middlewares/globalErrorHandler";
 import cookieParser from "cookie-parser";
 
@@ -17,6 +18,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/tenants", tenantsRouter);
+app.use("/api/v1/users", userRouter);
 
 app.use(globalErrorHandler);
 
