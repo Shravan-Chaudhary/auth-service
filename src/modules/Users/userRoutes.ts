@@ -30,12 +30,20 @@ router.post(
     }) as RequestHandler,
 );
 
-router.get("/", authenticate, (async (
+router.get("/", authenticate, canAccess([Roles.ADMIN]), (async (
     req: Request,
     res: Response,
     next: NextFunction,
 ) => {
     await userController.findAll(req, res, next);
+}) as RequestHandler);
+
+router.get("/:id", authenticate, (async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    await userController.findOne(req, res, next);
 }) as RequestHandler);
 
 export default router;

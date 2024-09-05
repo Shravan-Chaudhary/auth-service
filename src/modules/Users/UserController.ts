@@ -59,4 +59,19 @@ export class UserController {
             return;
         }
     }
+
+    public async findOne(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params;
+        try {
+            const user = await this.userService.findOneById(+id);
+            res.status(HttpStatus.OK).json({ ...user, password: undefined });
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(CreateHttpError.InternalServerError());
+            return;
+        }
+    }
 }
