@@ -45,6 +45,10 @@ export interface AuthRequest extends Request {
     };
 }
 
+export interface CreateUserRequest extends Request {
+    body: UserData;
+}
+
 export interface CreateTenantRequest extends Request {
     body: ITenantData;
 }
