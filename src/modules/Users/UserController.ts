@@ -1,4 +1,4 @@
-import { Response, NextFunction } from "express";
+import { Response, NextFunction, Request } from "express";
 import { CreateUserRequest } from "../../types";
 import { UsersService } from "./UsersService";
 import { Roles } from "../../constants";
@@ -44,5 +44,19 @@ export class UserController {
             return;
         }
         res.json();
+    }
+
+    public async findAll(req: Request, res: Response, next: NextFunction) {
+        try {
+            const users = await this.userService.findAll();
+            res.status(HttpStatus.OK).json(users);
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(CreateHttpError.InternalServerError());
+            return;
+        }
     }
 }

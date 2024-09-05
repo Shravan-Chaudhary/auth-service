@@ -30,4 +30,12 @@ router.post(
     }) as RequestHandler,
 );
 
+router.get("/", authenticate, (async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    await userController.findAll(req, res, next);
+}) as RequestHandler);
+
 export default router;
