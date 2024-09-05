@@ -19,11 +19,11 @@ export class TenantsService {
         return tenant;
     }
 
-    public async getAll(): Promise<Tenant[]> {
+    public async findAll(): Promise<Tenant[]> {
         return await this.tenantsRepository.find();
     }
 
-    public async getOneById(id: number): Promise<Tenant> {
+    public async findOneById(id: number): Promise<Tenant> {
         const tenant = await this.tenantsRepository.findOne({
             where: {
                 id,

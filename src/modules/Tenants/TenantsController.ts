@@ -46,7 +46,7 @@ export class TenantsController {
 
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const tenants = await this.tenantsService.getAll();
+            const tenants = await this.tenantsService.findAll();
             res.status(HttpStatus.OK).json(tenants);
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
@@ -64,7 +64,7 @@ export class TenantsController {
     public async getOne(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params;
         try {
-            const tenant = await this.tenantsService.getOneById(+id);
+            const tenant = await this.tenantsService.findOneById(+id);
             res.status(HttpStatus.OK).json(tenant);
         } catch (error) {
             next(error);
