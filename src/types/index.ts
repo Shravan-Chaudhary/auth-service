@@ -1,11 +1,17 @@
 import { Request } from "express";
 
 // Input types
-export interface UserData {
+export interface IUserData {
     firstName: string;
     lastName: string;
     email: string;
     password: string;
+    role: string;
+}
+
+export interface IUpdateUserData {
+    firstName: string;
+    lastName: string;
     role: string;
 }
 
@@ -27,7 +33,7 @@ export interface IRefreshTokenPayload {
 
 // Request types
 export interface RegisterUserRequest extends Request {
-    body: UserData;
+    body: IUserData;
 }
 
 export interface LoginUserRequest extends Request {
@@ -46,7 +52,11 @@ export interface AuthRequest extends Request {
 }
 
 export interface CreateUserRequest extends Request {
-    body: UserData;
+    body: IUserData;
+}
+
+export interface UpdateUserRequest extends Request {
+    body: IUpdateUserData;
 }
 
 export interface CreateTenantRequest extends Request {
