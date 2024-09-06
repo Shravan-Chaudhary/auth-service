@@ -63,6 +63,9 @@ export class UsersService implements IUserService {
     public async update(id: number, userData: IUpdateUserData) {
         try {
             const user = await this.userRepository.update(id, userData);
+            if (!user.affected) {
+                throw CreateHttpError.NotFoundError("user not found");
+            }
             return user;
         } catch (error) {
             throw CreateHttpError.DatabaseError(
