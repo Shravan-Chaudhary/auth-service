@@ -31,7 +31,7 @@ describe("POST /users", () => {
     });
 
     // Happy Path
-    describe("", () => {
+    describe("Given all fields", () => {
         it("should persist the user in database", async () => {
             // Arrange
             const user = {
@@ -59,7 +59,36 @@ describe("POST /users", () => {
             // Assert
             expect(users).toHaveLength(1);
             expect(users[0].email).toBe(user.email);
-            expect(users[0].role).toBe(Roles.MANAGER); // can write separate test for this assertion
+            expect(users[0].role).toBe(Roles.MANAGER);
+        });
+
+        it("should store manager user", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+                tenantId: 1,
+                role: Roles.MANAGER,
+            };
+            const adminToken = jwks.token({
+                sub: "1",
+                role: Roles.ADMIN,
+            });
+
+            // Act
+            await request(app)
+                .post(URL)
+                .set("Cookie", [`accessToken=${adminToken}`])
+                .send(user);
+
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            // Assert
+            expect(users).toHaveLength(1);
+            expect(users[0].role).toBe(Roles.MANAGER);
         });
 
         it("should return 403 if non admin user tries to create a user", async () => {
@@ -93,5 +122,30 @@ describe("POST /users", () => {
     });
 
     // Sad Path
-    describe("", () => {});
+    describe("Fields are missing", () => {
+        it("should return 400 status code if firstName is missing", async () => {
+            // Arrange
+            const user = {
+                firstName: "",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+                tenantId: 1,
+                role: Roles.MANAGER,
+            };
+            const adminToken = jwks.token({
+                sub: "1",
+                role: Roles.ADMIN,
+            });
+
+            // Act
+            const response = await request(app)
+                .post(URL)
+                .set("Cookie", [`accessToken=${adminToken}`])
+                .send(user);
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+        });
+    });
 });
