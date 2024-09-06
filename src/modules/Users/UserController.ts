@@ -1,6 +1,6 @@
 import { Response, NextFunction, Request } from "express";
-import { CreateUserRequest } from "../../types";
-import { UsersService } from "./UsersService";
+import { CreateUserRequest, UpdateUserRequest } from "../../types";
+import { IUserService } from "./UsersService";
 import { Roles } from "../../constants";
 import createHttpError from "http-errors";
 import CreateHttpError from "../../common/errors/http-exceptions";
@@ -8,7 +8,7 @@ import { HttpStatus } from "../../common/enums/http-codes";
 import { validationResult } from "express-validator";
 
 export class UserController {
-    constructor(private userService: UsersService) {}
+    constructor(private userService: IUserService) {}
 
     public async create(
         req: CreateUserRequest,
@@ -65,6 +65,53 @@ export class UserController {
         try {
             const user = await this.userService.findOneById(+id);
             res.status(HttpStatus.OK).json({ ...user, password: undefined });
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(CreateHttpError.InternalServerError());
+            return;
+        }
+    }
+
+    public async update(
+        req: UpdateUserRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        // validate
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
+            return;
+        }
+        const { firstName, lastName, role } = req.body;
+        const { id } = req.params;
+
+        try {
+            const user = await this.userService.update(+id, {
+                firstName,
+                lastName,
+                role,
+            });
+            res.status(HttpStatus.OK).json(user);
+        } catch (error) {
+            if (error instanceof createHttpError.HttpError) {
+                next(error);
+                return;
+            }
+            next(CreateHttpError.InternalServerError());
+            return;
+        }
+    }
+
+    public async delete(req: Request, res: Response, next: NextFunction) {
+        const { id } = req.params;
+
+        try {
+            await this.userService.delete(+id);
+            res.status(HttpStatus.NO_CONTENT);
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);

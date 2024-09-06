@@ -1,14 +1,16 @@
-import { Repository } from "typeorm";
+import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { User } from "../../entity/User";
-import { UserData } from "../../types";
+import { IUpdateUserData, IUserData } from "../../types";
 import { CredentialsService } from "../Credentials/CredentialsService";
 import CreateHttpError from "../../common/errors/http-exceptions";
 
 export interface IUserService {
-    create({ firstName, lastName, email, password }: UserData): Promise<User>;
+    create({ firstName, lastName, email, password }: IUserData): Promise<User>;
     findOneByEmail(email: string): Promise<User>;
     findOneById(id: number): Promise<User>;
     findAll(): Promise<User[]>;
+    update(id: number, userData: IUpdateUserData): Promise<UpdateResult>;
+    delete(id: number): Promise<DeleteResult>;
 }
 
 export class UsersService implements IUserService {
@@ -21,14 +23,13 @@ export class UsersService implements IUserService {
         this.credentialService = credentialService;
         this.userRepository = userRepository;
     }
-
     public async create({
         firstName,
         lastName,
         email,
         password,
         role,
-    }: UserData): Promise<User> {
+    }: IUserData): Promise<User> {
         const userExists = await this.userRepository.findOne({
             where: {
                 email,
@@ -58,6 +59,18 @@ export class UsersService implements IUserService {
             );
         }
     }
+
+    public async update(id: number, userData: IUpdateUserData) {
+        try {
+            const user = await this.userRepository.update(id, userData);
+            return user;
+        } catch (error) {
+            throw CreateHttpError.DatabaseError(
+                "error while updating user in database",
+            );
+        }
+    }
+
     public async findOneByEmail(email: string): Promise<User> {
         const user = await this.userRepository.findOne({
             where: {
@@ -88,5 +101,9 @@ export class UsersService implements IUserService {
 
     public async findAll(): Promise<User[]> {
         return await this.userRepository.find();
+    }
+
+    public async delete(id: number): Promise<DeleteResult> {
+        return await this.userRepository.delete(id);
     }
 }
