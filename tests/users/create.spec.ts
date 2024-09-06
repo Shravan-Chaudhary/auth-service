@@ -40,6 +40,7 @@ describe("POST /users", () => {
                 email: "shravan@gmail.com",
                 password: "password",
                 tenantId: 1,
+                role: Roles.MANAGER,
             };
             const adminToken = jwks.token({
                 sub: "1",
@@ -61,7 +62,34 @@ describe("POST /users", () => {
             expect(users[0].role).toBe(Roles.MANAGER); // can write separate test for this assertion
         });
 
-        it.todo("should return 403 if non admin user tries to create a user");
+        it("should return 403 if non admin user tries to create a user", async () => {
+            // Arrange
+            const user = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@gmail.com",
+                password: "password",
+                tenantId: 1,
+                role: Roles.MANAGER,
+            };
+            const adminToken = jwks.token({
+                sub: "1",
+                role: Roles.MANAGER,
+            });
+
+            // Act
+            const response = await request(app)
+                .post(URL)
+                .set("Cookie", [`accessToken=${adminToken}`])
+                .send(user);
+
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            // Assert
+            expect(response.statusCode).toBe(403);
+            expect(users).toHaveLength(0);
+        });
     });
 
     // Sad Path
