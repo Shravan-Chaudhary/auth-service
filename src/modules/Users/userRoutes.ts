@@ -31,7 +31,7 @@ router.post(
     }) as RequestHandler,
 );
 router.patch(
-    "/",
+    "/:id",
     authenticate,
     canAccess([Roles.ADMIN]),
     updateUserValidator,
