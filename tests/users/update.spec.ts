@@ -70,8 +70,58 @@ describe("PATCH /users/:id", () => {
 
     // Sad Path
     describe("Error cases", () => {
-        it("should return 403 if non-admin user tries to update a manager", async () => {});
+        it("should return 403 if non-admin user tries to update a manager", async () => {
+            // Arrange
+            const userData = {
+                firstName: "Shravan",
+                lastName: "Chaudhary",
+                email: "shravan@example.com",
+                password: "password",
+                tenantId: 1,
+                role: Roles.MANAGER,
+            };
+            const userRepository = connection.getRepository(User);
+            const savedUser = await userRepository.save(userData);
+            const updateUserData = {
+                firstName: "Jane",
+                lastName: "Smith",
+                role: Roles.MANAGER,
+            };
+            const managerToken = jwks.token({
+                sub: "2",
+                role: Roles.MANAGER,
+            });
 
-        it("should return 404 if the user to update doesn't exist", async () => {});
+            // Act
+            const response = await request(app)
+                .patch(`${URL}/${savedUser.id}`)
+                .set("Cookie", [`accessToken=${managerToken}`])
+                .send(updateUserData);
+
+            // Assert
+            expect(response.status).toBe(403);
+        });
+
+        it("should return 404 if the user to update doesn't exist", async () => {
+            const nonExistentUserId = 9999;
+            const updateUserData = {
+                firstName: "Jane",
+                lastName: "Smith",
+                role: Roles.MANAGER,
+            };
+            const adminToken = jwks.token({
+                sub: "1",
+                role: Roles.ADMIN,
+            });
+
+            // Act
+            const response = await request(app)
+                .patch(`${URL}/${nonExistentUserId}`)
+                .set("Cookie", [`accessToken=${adminToken}`])
+                .send(updateUserData);
+
+            // Assert
+            expect(response.status).toBe(500);
+        });
     });
 });
