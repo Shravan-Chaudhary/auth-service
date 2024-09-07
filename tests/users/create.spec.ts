@@ -5,6 +5,8 @@ import app from "../../src/app";
 import { Roles } from "../../src/constants";
 import createJWKSMock, { JWKSMock } from "mock-jwks";
 import { User } from "../../src/entity/User";
+import { createTenant } from "../utils";
+import { Tenant } from "../../src/entity/Tenant";
 
 describe("POST /users", () => {
     let connection: DataSource;
@@ -34,12 +36,14 @@ describe("POST /users", () => {
     describe("Given all fields", () => {
         it("should persist the user in database", async () => {
             // Arrange
+            const tenant = await createTenant(connection.getRepository(Tenant));
+
             const user = {
                 firstName: "Shravan",
                 lastName: "Chaudhary",
                 email: "shravan@gmail.com",
                 password: "password",
-                tenantId: 1,
+                tenantId: tenant.id,
                 role: Roles.MANAGER,
             };
             const adminToken = jwks.token({
@@ -64,12 +68,14 @@ describe("POST /users", () => {
 
         it("should store manager user", async () => {
             // Arrange
+            const tenant = await createTenant(connection.getRepository(Tenant));
+
             const user = {
                 firstName: "Shravan",
                 lastName: "Chaudhary",
                 email: "shravan@gmail.com",
                 password: "password",
-                tenantId: 1,
+                tenantId: tenant.id,
                 role: Roles.MANAGER,
             };
             const adminToken = jwks.token({
