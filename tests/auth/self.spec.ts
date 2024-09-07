@@ -34,7 +34,7 @@ describe("GET /auth/self", () => {
 
     // Happy Path
     describe("Given all fields", () => {
-        it.skip("should return 200 status code", async () => {
+        it("should return 200 status code", async () => {
             // Arrange
             const userData = {
                 firstName: "Shravan",
@@ -61,7 +61,7 @@ describe("GET /auth/self", () => {
             expect(response.status).toBe(200);
         });
 
-        it.skip("should return user data json", async () => {
+        it("should return user data json", async () => {
             // Arrange
             const userData = {
                 firstName: "Shravan",

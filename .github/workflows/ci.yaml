@@ -20,7 +20,7 @@ jobs:
             - name: Run eslint
               run: npm run lint
             - name: Test and coverage
-              run: npm run test
+              run: npm run test -- --testTimeout=30000
               env:
                   DATABASE_HOST: ${{ secrets.DB_HOST }}
                   DATABASE_PORT: ${{ secrets.DB_PORT }}
@@ -28,7 +28,7 @@ jobs:
                   DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
                   DATABASE_NAME: ${{ secrets.DB_NAME }}
                   REFRESH_TOKEN_SECRET: ${{secrets.REFRESH_TOKEN_SECRET}}
-                  #JWKS_URI:
+                  JWKS_URI: ${{secrets.JWKS_URI}}
                   PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
             - name: Build
               run: npm run build

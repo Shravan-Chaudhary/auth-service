@@ -9,8 +9,8 @@ const canAccess = (roles: string[]) => {
 
         if (!roles.includes(roleFromToken)) {
             next(
-                CreateHttpError.UnauthorizedError(
-                    "You don't have permission to access.",
+                CreateHttpError.ForbiddenError(
+                    "You don't have permission to access this resource.",
                 ),
             );
         }
