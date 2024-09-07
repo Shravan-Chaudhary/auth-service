@@ -5,7 +5,7 @@ import { User } from "../../entity/User";
 import logger from "../../config/logger";
 import { AuthService } from "./AuthService";
 import registerValidator from "../../validators/register-validator";
-import { UsersService } from "../Users/UsersService";
+import { UserService } from "../Users/UserService";
 import { TokenService } from "../Token/TokenService";
 import { RefreshToken } from "../../entity/RefreshToken";
 import loginValidator from "../../validators/login-validator";
@@ -19,7 +19,7 @@ const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const credentialService = new CredentialsService();
-const userService = new UsersService(credentialService, userRepository);
+const userService = new UserService(credentialService, userRepository);
 const tokenService = new TokenService(refreshTokenRepository);
 const authService = new AuthService(
     userService,

@@ -5,7 +5,7 @@ import {
     LoginUserRequest,
     RegisterUserRequest,
 } from "../../types";
-import { IAuthService } from "./AuthService";
+import { AuthService } from "./AuthService";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
@@ -14,8 +14,8 @@ import { TokenService } from "../Token/TokenService";
 import { HttpStatus } from "../../common/enums/http-codes";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
-import { IUserService } from "../Users/UsersService";
 import CreateHttpError from "../../common/errors/http-exceptions";
+import { UserService } from "../Users/UserService";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -24,14 +24,14 @@ interface IAuthController {
 }
 
 export class AuthController implements IAuthController {
-    authService: IAuthService;
-    userService: IUserService;
+    authService: AuthService;
+    userService: UserService;
     tokenService: TokenService;
     logger: Logger;
 
     constructor(
-        authService: IAuthService,
-        userService: IUserService,
+        authService: AuthService,
+        userService: UserService,
         tokenService: TokenService,
         logger: Logger,
     ) {

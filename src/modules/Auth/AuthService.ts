@@ -1,7 +1,7 @@
 import { User } from "../../entity/User";
 import { IUserData } from "../../types";
 import { Repository } from "typeorm";
-import { UsersService } from "../Users/UsersService";
+import { UserService } from "../Users/UserService";
 import createHttpError from "http-errors";
 import { CredentialsService } from "../Credentials/CredentialsService";
 import CreateHttpError from "../../common/errors/http-exceptions";
@@ -15,9 +15,9 @@ export interface IAuthService {
 export class AuthService implements IAuthService {
     userRepository: Repository<User>;
     credentialService: CredentialsService;
-    userService: UsersService;
+    userService: UserService;
     constructor(
-        userService: UsersService,
+        userService: UserService,
         credentialService: CredentialsService,
         userRepository: Repository<User>,
     ) {
