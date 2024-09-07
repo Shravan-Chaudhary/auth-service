@@ -13,7 +13,7 @@ export interface IUserService {
     delete(id: number): Promise<DeleteResult>;
 }
 
-export class UsersService implements IUserService {
+export class UserService {
     credentialService: CredentialsService;
     userRepository: Repository<User>;
     constructor(
@@ -106,7 +106,7 @@ export class UsersService implements IUserService {
         return await this.userRepository.find();
     }
 
-    public async delete(id: number): Promise<DeleteResult> {
+    public async delete(id: number) {
         return await this.userRepository.delete(id);
     }
 }
