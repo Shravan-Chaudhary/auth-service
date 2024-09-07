@@ -1,6 +1,6 @@
 import { Response, NextFunction, Request } from "express";
 import { CreateUserRequest, UpdateUserRequest } from "../../types";
-import { IUserService } from "./UsersService";
+import { UserService } from "./UserService";
 import { Roles } from "../../constants";
 import createHttpError from "http-errors";
 import CreateHttpError from "../../common/errors/http-exceptions";
@@ -8,7 +8,7 @@ import { HttpStatus } from "../../common/enums/http-codes";
 import { validationResult } from "express-validator";
 
 export class UserController {
-    constructor(private userService: IUserService) {}
+    constructor(private userService: UserService) {}
 
     public async create(
         req: CreateUserRequest,
@@ -110,8 +110,8 @@ export class UserController {
         const { id } = req.params;
 
         try {
-            await this.userService.delete(+id);
-            res.status(HttpStatus.NO_CONTENT);
+            await this.userService.delete(Number(id));
+            res.status(HttpStatus.NO_CONTENT).json();
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
