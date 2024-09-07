@@ -1,3 +1,14 @@
+import { Repository } from "typeorm";
+import { Tenant } from "../../src/entity/Tenant";
+
+export const createTenant = async (tenantRepository: Repository<Tenant>) => {
+    const tenant = await tenantRepository.save({
+        name: "tenant 1",
+        address: "dalanwala, dehradun",
+    });
+    return tenant;
+};
+
 export const isValidJwt = (token: string | null): boolean => {
     if (token === null) {
         return false;
