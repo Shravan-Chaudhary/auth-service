@@ -3,6 +3,7 @@ import { User } from "../../entity/User";
 import { IUpdateUserData, IUserData } from "../../types";
 import { CredentialsService } from "../Credentials/CredentialsService";
 import CreateHttpError from "../../common/errors/http-exceptions";
+import { Tenant } from "../../entity/Tenant";
 
 export interface IUserService {
     create({ firstName, lastName, email, password }: IUserData): Promise<User>;
@@ -23,13 +24,10 @@ export class UserService {
         this.credentialService = credentialService;
         this.userRepository = userRepository;
     }
-    public async create({
-        firstName,
-        lastName,
-        email,
-        password,
-        role,
-    }: IUserData): Promise<User> {
+    public async create(
+        { firstName, lastName, email, password, role }: IUserData,
+        tenant?: Tenant,
+    ) {
         const userExists = await this.userRepository.findOne({
             where: {
                 email,
@@ -52,6 +50,7 @@ export class UserService {
                 email,
                 password: hashedPassword,
                 role,
+                tenant,
             });
         } catch (error) {
             throw CreateHttpError.DatabaseError(
