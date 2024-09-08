@@ -16,13 +16,14 @@ import createUserValidator from "../../validators/create-user-validator";
 import updateUserValidator from "../../validators/update-user-validator";
 import { TenantsService } from "../Tenants/TenantsService";
 import { Tenant } from "../../entity/Tenant";
+import logger from "../../config/logger";
 
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
 const tenantRepository = AppDataSource.getRepository(Tenant);
 const credentialService = new CredentialsService();
 const tenantService = new TenantsService(tenantRepository);
-const userService = new UserService(credentialService, userRepository);
+const userService = new UserService(credentialService, userRepository, logger);
 const userController = new UserController(userService, tenantService);
 
 router.post(

@@ -19,12 +19,13 @@ const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const credentialService = new CredentialsService();
-const userService = new UserService(credentialService, userRepository);
+const userService = new UserService(credentialService, userRepository, logger);
 const tokenService = new TokenService(refreshTokenRepository);
 const authService = new AuthService(
     userService,
     credentialService,
     userRepository,
+    logger,
 );
 const authController = new AuthController(
     authService,

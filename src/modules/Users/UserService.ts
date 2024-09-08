@@ -4,6 +4,7 @@ import { IUpdateUserData, IUserData } from "../../types";
 import { CredentialsService } from "../Credentials/CredentialsService";
 import CreateHttpError from "../../common/errors/http-exceptions";
 import { Tenant } from "../../entity/Tenant";
+import { Logger } from "winston";
 
 export interface IUserService {
     create({ firstName, lastName, email, password }: IUserData): Promise<User>;
@@ -15,15 +16,11 @@ export interface IUserService {
 }
 
 export class UserService {
-    credentialService: CredentialsService;
-    userRepository: Repository<User>;
     constructor(
-        credentialService: CredentialsService,
-        userRepository: Repository<User>,
-    ) {
-        this.credentialService = credentialService;
-        this.userRepository = userRepository;
-    }
+        private credentialService: CredentialsService,
+        private userRepository: Repository<User>,
+        private logger: Logger,
+    ) {}
     public async create(
         { firstName, lastName, email, password, role }: IUserData,
         tenant?: Tenant,
@@ -80,6 +77,7 @@ export class UserService {
             },
         });
         if (!user) {
+            this.logger.debug(`User-Service: findOneByEmail: user not found`);
             throw CreateHttpError.UnauthorizedError(
                 "email or password does not match",
             );

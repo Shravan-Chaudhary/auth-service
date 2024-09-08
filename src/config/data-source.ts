@@ -11,8 +11,8 @@ const AppDataSource = new DataSource({
     database: Config.DATABASE_NAME,
     synchronize: false,
     logging: false,
-    entities: ["src/entity/*.ts"],
-    migrations: ["src/migrations/*.ts"],
+    entities: ["src/entity/*.{ts,js}"],
+    migrations: ["src/migrations/*.{ts,js}"],
     subscribers: [],
 });
 
