@@ -140,6 +140,7 @@ export class AuthController implements IAuthController {
 
             res.status(HttpStatus.OK).json({ id: user.id });
         } catch (error) {
+            this.logger.debug(`Auth-Controller: login Error here: ${error}`);
             if (error instanceof createHttpError.HttpError) {
                 next(error);
                 return;
