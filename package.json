@@ -8,7 +8,7 @@
       "dev": "cross-env NODE_ENV=development nodemon src/server.ts",
       "build": "tsc",
       "start": "ts-node src/server.ts",
-      "start:postgres":"docker run --rm --name auth-pg-container -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -v auth-pg:/var/lib/postgresql/data -p 5432:5432 -d postgres",
+      "start:postgres": "docker run --rm --name auth-pg-container -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -v auth-pg:/var/lib/postgresql/data -p 5432:5432 -d postgres",
       "createdb:dev": "docker exec auth-pg-container createdb -U root auth_pg_data_dev",
       "createdb:test": "docker exec auth-pg-container createdb -U root auth_pg_data_test",
       "format:check": "prettier . --check",
@@ -17,9 +17,9 @@
       "lint:fix": "eslint . --fix",
       "prepare": "husky install",
       "test:watch": "jest --watch --runInBand",
-      "test": "jest --runInBand",
+      "test": "jest --no-cache --coverage --all --runInBand",
       "migration:generate": "typeorm-ts-node-commonjs migration:generate",
-      "migration:run": "typeorm-ts-node-commonjs migration:run",
+      "migration:run": "typeorm-ts-node-commonjs migration:run --dataSource src/config/data-source.ts",
       "migration:create": "typeorm-ts-node-commonjs migration:create"
    },
    "author": "Shravan <shravansinghchaudhary@gmail.com>",
@@ -27,6 +27,7 @@
    "devDependencies": {
       "@types/bcryptjs": "^2.4.6",
       "@types/cookie-parser": "^1.4.7",
+      "@types/cors": "^2.8.17",
       "@types/express": "^4.17.17",
       "@types/http-errors": "^2.0.1",
       "@types/jest": "^29.5.4",

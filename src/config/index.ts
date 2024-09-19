@@ -19,6 +19,8 @@ const {
     REFRESH_TOKEN_SECRET,
     PRIVATE_KEY,
     JWKS_URI,
+    CORS_ORIGINS_ADMIN,
+    CORS_ORIGINS,
 } = process.env;
 
 export const Config = {
@@ -32,4 +34,6 @@ export const Config = {
     REFRESH_TOKEN_SECRET,
     PRIVATE_KEY,
     JWKS_URI,
+    CORS_ORIGINS,
+    CORS_ORIGINS_ADMIN,
 };
