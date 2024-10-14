@@ -2,15 +2,15 @@ import { Response, NextFunction, Request } from "express";
 import { CreateUserRequest, UpdateUserRequest } from "../../types";
 import { UserService } from "./UserService";
 import createHttpError from "http-errors";
-import CreateHttpError from "../../common/errors/http-exceptions";
-import { HttpStatus } from "../../common/enums/http-codes";
+import CreateHttpError from "../../common/http/httpErrors";
+import { HttpStatus } from "../../common/http/httpStatusCodes";
 import { validationResult } from "express-validator";
 import { TenantsService } from "../Tenants/TenantsService";
 
 export class UserController {
     constructor(
-        private userService: UserService,
-        private tenantService: TenantsService,
+        private readonly userService: UserService,
+        private readonly tenantService: TenantsService,
     ) {}
 
     public async create(
@@ -55,7 +55,7 @@ export class UserController {
         res.json();
     }
 
-    public async findAll(req: Request, res: Response, next: NextFunction) {
+    public async findAll(_req: Request, res: Response, next: NextFunction) {
         try {
             const users = await this.userService.findAll();
             res.status(HttpStatus.OK).json(users);

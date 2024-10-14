@@ -4,7 +4,7 @@ import { RefreshToken } from "../../entity/RefreshToken";
 import { Repository } from "typeorm";
 import { User } from "../../entity/User";
 import { ONE_YEAR } from "../../constants";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 
 export class TokenService {
     refreshTokenRepository: Repository<RefreshToken>;
@@ -24,7 +24,7 @@ export class TokenService {
         }
         try {
             privateKey = Config.PRIVATE_KEY;
-        } catch (error) {
+        } catch (_error) {
             const err = CreateHttpError.InternalServerError(
                 "error while reading private key",
             );

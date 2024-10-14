@@ -2,7 +2,7 @@ import { DeleteResult, Repository, UpdateResult } from "typeorm";
 import { User } from "../../entity/User";
 import { IUpdateUserData, IUserData } from "../../types";
 import { CredentialsService } from "../Credentials/CredentialsService";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 import { Tenant } from "../../entity/Tenant";
 import { Logger } from "winston";
 
@@ -17,9 +17,9 @@ export interface IUserService {
 
 export class UserService {
     constructor(
-        private credentialService: CredentialsService,
-        private userRepository: Repository<User>,
-        private logger: Logger,
+        private readonly credentialService: CredentialsService,
+        private readonly userRepository: Repository<User>,
+        private readonly logger: Logger,
     ) {}
     public async create(
         { firstName, lastName, email, password, role }: IUserData,
@@ -49,7 +49,7 @@ export class UserService {
                 role,
                 tenant,
             });
-        } catch (error) {
+        } catch (_error) {
             throw CreateHttpError.DatabaseError(
                 "error while saving user in database",
             );
@@ -63,7 +63,7 @@ export class UserService {
                 throw CreateHttpError.NotFoundError("user not found");
             }
             return user;
-        } catch (error) {
+        } catch (_error) {
             throw CreateHttpError.DatabaseError(
                 "error while updating user in database",
             );

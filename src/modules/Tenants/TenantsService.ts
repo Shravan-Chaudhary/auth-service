@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { Tenant } from "../../entity/Tenant";
 import { ITenantData } from "../../types";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 
 export class TenantsService {
     constructor(private tenantsRepository: Repository<Tenant>) {}

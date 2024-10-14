@@ -3,14 +3,14 @@ import createHttpError from "http-errors";
 import { TenantsService } from "./TenantsService";
 import { Logger } from "winston";
 import { CreateTenantRequest, UpdateTenantRequest } from "../../types";
-import CreateHttpError from "../../common/errors/http-exceptions";
-import { HttpStatus } from "../../common/enums/http-codes";
+import CreateHttpError from "../../common/http/httpErrors";
+import { HttpStatus } from "../../common/http/httpStatusCodes";
 import { validationResult } from "express-validator";
 
 export class TenantsController {
     constructor(
-        private tenantsService: TenantsService,
-        private logger: Logger,
+        private readonly tenantsService: TenantsService,
+        private readonly logger: Logger,
     ) {}
 
     public async create(
@@ -44,7 +44,7 @@ export class TenantsController {
         }
     }
 
-    public async getAll(req: Request, res: Response, next: NextFunction) {
+    public async getAll(_req: Request, res: Response, next: NextFunction) {
         try {
             const tenants = await this.tenantsService.findAll();
             res.status(HttpStatus.OK).json(tenants);

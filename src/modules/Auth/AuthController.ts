@@ -11,10 +11,10 @@ import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
-import { HttpStatus } from "../../common/enums/http-codes";
+import { HttpStatus } from "../../common/http/httpStatusCodes";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 import { UserService } from "../Users/UserService";
 
 interface IAuthController {
