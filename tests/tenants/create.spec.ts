@@ -6,7 +6,7 @@ import { Tenant } from "../../src/entity/Tenant";
 
 describe("POST /tenants", () => {
     let connection: DataSource;
-    const URL = "/api/v1/tenants";
+    const URL = "/api/v1/auth/tenants";
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();

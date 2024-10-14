@@ -8,7 +8,7 @@ import createJWKSMock, { JWKSMock } from "mock-jwks";
 describe("GET /users", () => {
     let connection: DataSource;
     let jwks: JWKSMock;
-    const URL = "/api/v1/users/";
+    const URL = "/api/v1/auth/users";
 
     beforeAll(async () => {
         jwks = createJWKSMock("http://localhost:5501");
