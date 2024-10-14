@@ -22,6 +22,7 @@ jobs:
             - name: Test and coverage
               run: npm run test -- --testTimeout=30000
               env:
+                  ENV: ${{secrets.ENV}}
                   DATABASE_HOST: ${{ secrets.DB_HOST }}
                   DATABASE_PORT: ${{ secrets.DB_PORT }}
                   DATABASE_USERNAME: ${{ secrets.DB_USERNAME }}
