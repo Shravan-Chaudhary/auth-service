@@ -6,6 +6,8 @@ import CreateHttpError from "../../common/http/httpErrors";
 import { HttpStatus } from "../../common/http/httpStatusCodes";
 import { validationResult } from "express-validator";
 import { TenantsService } from "../Tenants/TenantsService";
+import httpResponse from "../../common/http/httpResponse";
+import ResponseMessage from "../../common/constants/responseMessage";
 
 export class UserController {
     constructor(
@@ -18,18 +20,20 @@ export class UserController {
         res: Response,
         next: NextFunction,
     ) {
-        // validation
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-
-        const { firstName, lastName, email, password, role, tenantId } =
-            req.body;
-
         try {
+            // validation
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                const err = CreateHttpError.BadRequestError(
+                    result.array()[0].msg as string,
+                );
+                throw err;
+            }
+
+            const { firstName, lastName, email, password, role, tenantId } =
+                req.body;
+
             const tenant = await this.tenantService.findOneById(+tenantId!);
 
             const user = await this.userService.create(
@@ -43,7 +47,13 @@ export class UserController {
                 tenant,
             );
 
-            res.status(HttpStatus.CREATED).json({ id: user.id });
+            httpResponse(
+                req,
+                res,
+                HttpStatus.CREATED,
+                ResponseMessage.CREATED,
+                { id: user.id },
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -52,13 +62,18 @@ export class UserController {
             next(CreateHttpError.BadRequestError());
             return;
         }
-        res.json();
     }
 
-    public async findAll(_req: Request, res: Response, next: NextFunction) {
+    public async findAll(req: Request, res: Response, next: NextFunction) {
         try {
             const users = await this.userService.findAll();
-            res.status(HttpStatus.OK).json(users);
+            httpResponse(
+                req,
+                res,
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS,
+                users,
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -73,7 +88,10 @@ export class UserController {
         const { id } = req.params;
         try {
             const user = await this.userService.findOneById(+id);
-            res.status(HttpStatus.OK).json({ ...user, password: undefined });
+            httpResponse(req, res, HttpStatus.OK, ResponseMessage.SUCCESS, {
+                ...user,
+                password: undefined,
+            });
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -89,22 +107,30 @@ export class UserController {
         res: Response,
         next: NextFunction,
     ) {
-        // validate
-        const result = validationResult(req);
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-        const { firstName, lastName, role } = req.body;
-        const { id } = req.params;
-
         try {
+            // validate
+            const result = validationResult(req);
+            if (!result.isEmpty()) {
+                const err = CreateHttpError.BadRequestError(
+                    result.array()[0].msg as string,
+                );
+                throw err;
+            }
+            const { firstName, lastName, role } = req.body;
+            const { id } = req.params;
+
             const user = await this.userService.update(+id, {
                 firstName,
                 lastName,
                 role,
             });
-            res.status(HttpStatus.OK).json(user);
+            httpResponse(
+                req,
+                res,
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS,
+                user,
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -120,7 +146,13 @@ export class UserController {
 
         try {
             await this.userService.delete(Number(id));
-            res.status(HttpStatus.NO_CONTENT).json();
+            httpResponse(
+                req,
+                res,
+                HttpStatus.NO_CONTENT,
+                ResponseMessage.PARTIAL_CONTENT,
+                null,
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
