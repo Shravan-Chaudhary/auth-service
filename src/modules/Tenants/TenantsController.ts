@@ -20,15 +20,17 @@ export class TenantsController {
         res: Response,
         next: NextFunction,
     ) {
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-
-        const { name, address } = req.body;
         try {
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                const err = CreateHttpError.BadRequestError(
+                    result.array()[0].msg as string,
+                );
+                throw err;
+            }
+
+            const { name, address } = req.body;
             const tenant = await this.tenantsService.create({ name, address });
 
             this.logger.info("Tenant created", { id: tenant.id });
