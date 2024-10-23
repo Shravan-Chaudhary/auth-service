@@ -1,5 +1,5 @@
 import createHttpError from "http-errors";
-import { HttpStatus } from "../enums/http-codes";
+import { HttpStatus } from "./httpStatusCodes";
 
 const CreateHttpError = {
     BadRequestError(message?: string) {

@@ -9,7 +9,7 @@ config({
 });
 
 const {
-    NODE_ENV,
+    ENV,
     PORT,
     DATABASE_HOST,
     DATABASE_NAME,
@@ -24,7 +24,7 @@ const {
 } = process.env;
 
 export const Config = {
-    NODE_ENV,
+    ENV,
     PORT,
     DATABASE_HOST,
     DATABASE_NAME,

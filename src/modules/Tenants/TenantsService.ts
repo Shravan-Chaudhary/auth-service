@@ -1,10 +1,10 @@
 import { Repository } from "typeorm";
 import { Tenant } from "../../entity/Tenant";
 import { ITenantData } from "../../types";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 
 export class TenantsService {
-    constructor(private tenantsRepository: Repository<Tenant>) {}
+    constructor(private readonly tenantsRepository: Repository<Tenant>) {}
 
     public async create(tenantData: ITenantData): Promise<Tenant> {
         return await this.tenantsRepository.save(tenantData);
@@ -19,6 +19,7 @@ export class TenantsService {
         return tenant;
     }
 
+    //TODO: Sort tenants before returning
     public async findAll(): Promise<Tenant[]> {
         return await this.tenantsRepository.find();
     }

@@ -11,11 +11,13 @@ import { validationResult } from "express-validator";
 import { ONE_HOUR, ONE_YEAR, Roles } from "../../constants";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../Token/TokenService";
-import { HttpStatus } from "../../common/enums/http-codes";
+import { HttpStatus } from "../../common/http/httpStatusCodes";
 import createHttpError from "http-errors";
 import { setCookie } from "../../utils";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 import { UserService } from "../Users/UserService";
+import httpResponse from "../../common/http/httpResponse";
+import ResponseMessage from "../../common/constants/responseMessage";
 
 interface IAuthController {
     register(req: RegisterUserRequest, res: Response, next: NextFunction): void;
@@ -46,25 +48,26 @@ export class AuthController implements IAuthController {
         res: Response,
         next: NextFunction,
     ) {
-        //  validate & sanitize user input
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-
-        const { firstName, lastName, email, password } = req.body;
-
-        // Debugging
-        this.logger.debug("request to register a user: ", {
-            firstName,
-            lastName,
-            email,
-            password: "********",
-        });
-
         try {
+            //  validate & sanitize user input
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                const err = CreateHttpError.BadRequestError(
+                    result.array()[0].msg as string,
+                );
+                throw err;
+            }
+
+            const { firstName, lastName, email, password } = req.body;
+
+            // Debugging
+            this.logger.debug("request to register a user: ", {
+                firstName,
+                lastName,
+                email,
+                password: "********",
+            });
             const user = await this.authService.register({
                 firstName,
                 lastName,
@@ -92,7 +95,13 @@ export class AuthController implements IAuthController {
             setCookie(res, "accessToken", accessToken, ONE_HOUR);
             setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
 
-            res.status(HttpStatus.CREATED).json({ id: user.id });
+            httpResponse(
+                req,
+                res,
+                HttpStatus.CREATED,
+                ResponseMessage.CREATED,
+                { id: user.id },
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -108,16 +117,18 @@ export class AuthController implements IAuthController {
         res: Response,
         next: NextFunction,
     ) {
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-
-        const { email, password } = req.body;
-
         try {
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                const err = CreateHttpError.BadRequestError(
+                    result.array()[0].msg as string,
+                );
+                throw err;
+            }
+
+            const { email, password } = req.body;
+
             const user = await this.authService.validate(email, password);
             // generate access token & refresh token
             const payload: JwtPayload = {
@@ -138,7 +149,9 @@ export class AuthController implements IAuthController {
             setCookie(res, "accessToken", accessToken, ONE_HOUR);
             setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
 
-            res.status(HttpStatus.OK).json({ id: user.id });
+            httpResponse(req, res, HttpStatus.OK, ResponseMessage.SUCCESS, {
+                id: user.id,
+            });
         } catch (error) {
             this.logger.debug(`Auth-Controller: login Error here: ${error}`);
             if (error instanceof createHttpError.HttpError) {
@@ -155,7 +168,10 @@ export class AuthController implements IAuthController {
 
         try {
             const user = await this.userService.findOneById(Number(sub));
-            res.status(HttpStatus.OK).json({ ...user, password: undefined });
+            httpResponse(req, res, HttpStatus.OK, ResponseMessage.SUCCESS, {
+                ...user,
+                password: undefined,
+            });
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -200,6 +216,11 @@ export class AuthController implements IAuthController {
 
             setCookie(res, "accessToken", accessToken, ONE_HOUR);
             setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
+
+            res.json({ id: sub });
+            httpResponse(req, res, HttpStatus.OK, ResponseMessage.SUCCESS, {
+                id: sub,
+            });
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -208,8 +229,6 @@ export class AuthController implements IAuthController {
             next(CreateHttpError.InternalServerError());
             return;
         }
-
-        res.json({ id: sub });
     }
 
     public async logout(req: AuthRequest, res: Response, next: NextFunction) {
@@ -225,6 +244,13 @@ export class AuthController implements IAuthController {
             res.clearCookie("refreshToken");
 
             res.status(HttpStatus.NO_CONTENT).json({});
+            httpResponse(
+                req,
+                res,
+                HttpStatus.NO_CONTENT,
+                ResponseMessage.PARTIAL_CONTENT,
+                null,
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);

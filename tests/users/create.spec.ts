@@ -11,7 +11,7 @@ import { Tenant } from "../../src/entity/Tenant";
 describe("POST /users", () => {
     let connection: DataSource;
     let jwks: JWKSMock;
-    const URL = "/api/v1/users";
+    const URL = "/api/v1/auth/users";
 
     beforeAll(async () => {
         jwks = createJWKSMock("http://localhost:5501");

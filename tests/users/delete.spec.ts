@@ -9,7 +9,7 @@ import { User } from "../../src/entity/User";
 describe("DELETE /users/:id", () => {
     let connection: DataSource;
     let jwks: JWKSMock;
-    const URL = "/api/v1/users";
+    const URL = "/api/v1/auth/users";
 
     beforeAll(async () => {
         jwks = createJWKSMock("http://localhost:5501");

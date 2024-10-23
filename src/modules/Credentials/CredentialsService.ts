@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 
 export class CredentialsService {
     async hashPassword(password: string) {

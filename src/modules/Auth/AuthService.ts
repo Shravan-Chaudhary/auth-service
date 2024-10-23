@@ -4,7 +4,7 @@ import { Repository } from "typeorm";
 import { UserService } from "../Users/UserService";
 import createHttpError from "http-errors";
 import { CredentialsService } from "../Credentials/CredentialsService";
-import CreateHttpError from "../../common/errors/http-exceptions";
+import CreateHttpError from "../../common/http/httpErrors";
 import { Logger } from "winston";
 
 export interface IAuthService {

@@ -3,14 +3,16 @@ import createHttpError from "http-errors";
 import { TenantsService } from "./TenantsService";
 import { Logger } from "winston";
 import { CreateTenantRequest, UpdateTenantRequest } from "../../types";
-import CreateHttpError from "../../common/errors/http-exceptions";
-import { HttpStatus } from "../../common/enums/http-codes";
+import CreateHttpError from "../../common/http/httpErrors";
+import { HttpStatus } from "../../common/http/httpStatusCodes";
 import { validationResult } from "express-validator";
+import httpResponse from "../../common/http/httpResponse";
+import ResponseMessage from "../../common/constants/responseMessage";
 
 export class TenantsController {
     constructor(
-        private tenantsService: TenantsService,
-        private logger: Logger,
+        private readonly tenantsService: TenantsService,
+        private readonly logger: Logger,
     ) {}
 
     public async create(
@@ -18,19 +20,27 @@ export class TenantsController {
         res: Response,
         next: NextFunction,
     ) {
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-
-        const { name, address } = req.body;
         try {
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                const err = CreateHttpError.BadRequestError(
+                    result.array()[0].msg as string,
+                );
+                throw err;
+            }
+
+            const { name, address } = req.body;
             const tenant = await this.tenantsService.create({ name, address });
 
             this.logger.info("Tenant created", { id: tenant.id });
-            res.status(201).json({ id: tenant.id });
+            httpResponse(
+                req,
+                res,
+                HttpStatus.CREATED,
+                ResponseMessage.CREATED,
+                { id: tenant.id },
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -47,7 +57,13 @@ export class TenantsController {
     public async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const tenants = await this.tenantsService.findAll();
-            res.status(HttpStatus.OK).json(tenants);
+            httpResponse(
+                req,
+                res,
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS,
+                tenants,
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -65,7 +81,13 @@ export class TenantsController {
         const { id } = req.params;
         try {
             const tenant = await this.tenantsService.findOneById(+id);
-            res.status(HttpStatus.OK).json(tenant);
+            httpResponse(
+                req,
+                res,
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS,
+                tenant,
+            );
         } catch (error) {
             next(error);
         }
@@ -76,21 +98,29 @@ export class TenantsController {
         res: Response,
         next: NextFunction,
     ) {
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            res.status(HttpStatus.BAD_REQUEST).json({ errors: result.array() });
-            return;
-        }
-        const { name, address } = req.body;
-        const { id } = req.params;
-
         try {
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                const err = CreateHttpError.BadRequestError(
+                    result.array()[0].msg as string,
+                );
+                throw err;
+            }
+            const { name, address } = req.body;
+            const { id } = req.params;
+
             const tenant = await this.tenantsService.update(+id, {
                 name,
                 address,
             });
-            res.status(HttpStatus.OK).json(tenant);
+            httpResponse(
+                req,
+                res,
+                HttpStatus.OK,
+                ResponseMessage.SUCCESS,
+                tenant,
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
@@ -109,7 +139,13 @@ export class TenantsController {
 
         try {
             await this.tenantsService.delete(+id);
-            res.status(204).json();
+            httpResponse(
+                req,
+                res,
+                HttpStatus.NO_CONTENT,
+                ResponseMessage.SUCCESS,
+                {},
+            );
         } catch (error) {
             if (error instanceof createHttpError.HttpError) {
                 next(error);
