@@ -84,7 +84,9 @@ describe("GET /auth/self", () => {
                 .get(URL)
                 .set("Cookie", [`accessToken=${accessToken}`]);
             // Assert
-            expect((response.body as Record<string, string>).id).toBe(user.id);
+            expect((response.body.data as Record<string, string>).id).toBe(
+                user.id,
+            );
         });
 
         it("should not return password", async () => {
