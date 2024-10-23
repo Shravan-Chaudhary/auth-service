@@ -19,6 +19,7 @@ export class TenantsService {
         return tenant;
     }
 
+    //TODO: Sort tenants before returning
     public async findAll(): Promise<Tenant[]> {
         return await this.tenantsRepository.find();
     }
