@@ -217,7 +217,6 @@ export class AuthController implements IAuthController {
             setCookie(res, "accessToken", accessToken, ONE_HOUR);
             setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
 
-            res.json({ id: sub });
             httpResponse(req, res, HttpStatus.OK, ResponseMessage.SUCCESS, {
                 id: sub,
             });
@@ -243,7 +242,6 @@ export class AuthController implements IAuthController {
             res.clearCookie("accessToken");
             res.clearCookie("refreshToken");
 
-            res.status(HttpStatus.NO_CONTENT).json({});
             httpResponse(
                 req,
                 res,
