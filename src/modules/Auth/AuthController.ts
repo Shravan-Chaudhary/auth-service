@@ -80,6 +80,9 @@ export class AuthController implements IAuthController {
             const payload: JwtPayload = {
                 sub: String(user.id),
                 role: user.role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
             };
 
             const accessToken = this.tokenService.generateAccessToken(payload);
@@ -134,6 +137,9 @@ export class AuthController implements IAuthController {
             const payload: JwtPayload = {
                 sub: String(user.id),
                 role: user.role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
             };
             const accessToken = this.tokenService.generateAccessToken(payload);
 
@@ -197,8 +203,11 @@ export class AuthController implements IAuthController {
             }
 
             const payload: JwtPayload = {
-                sub,
+                sub: String(user.id),
                 role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
             };
             const accessToken = this.tokenService.generateAccessToken(payload);
 
