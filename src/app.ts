@@ -9,10 +9,14 @@ import cors from "cors";
 import { Config } from "./config";
 
 const app = express();
+const ALLOWED_DOMAINS = [
+    Config.CORS_CLIENT_URL as string,
+    Config.CORS_ADMIN_URL as string,
+];
 
 app.use(
     cors({
-        origin: [Config.CORS_ORIGINS_ADMIN!],
+        origin: ALLOWED_DOMAINS,
         credentials: true,
     }),
 );
