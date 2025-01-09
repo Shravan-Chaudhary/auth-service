@@ -80,6 +80,9 @@ export class AuthController implements IAuthController {
             const payload: JwtPayload = {
                 sub: String(user.id),
                 role: user.role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
             };
 
             const accessToken = this.tokenService.generateAccessToken(payload);
@@ -134,6 +137,9 @@ export class AuthController implements IAuthController {
             const payload: JwtPayload = {
                 sub: String(user.id),
                 role: user.role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
             };
             const accessToken = this.tokenService.generateAccessToken(payload);
 
@@ -197,8 +203,11 @@ export class AuthController implements IAuthController {
             }
 
             const payload: JwtPayload = {
-                sub,
+                sub: String(user.id),
                 role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
             };
             const accessToken = this.tokenService.generateAccessToken(payload);
 
@@ -217,7 +226,6 @@ export class AuthController implements IAuthController {
             setCookie(res, "accessToken", accessToken, ONE_HOUR);
             setCookie(res, "refreshToken", refreshToken, ONE_YEAR);
 
-            res.json({ id: sub });
             httpResponse(req, res, HttpStatus.OK, ResponseMessage.SUCCESS, {
                 id: sub,
             });
@@ -243,7 +251,6 @@ export class AuthController implements IAuthController {
             res.clearCookie("accessToken");
             res.clearCookie("refreshToken");
 
-            res.status(HttpStatus.NO_CONTENT).json({});
             httpResponse(
                 req,
                 res,
