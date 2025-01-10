@@ -21,6 +21,7 @@ const {
     JWKS_URI,
     CORS_ADMIN_URL,
     CORS_CLIENT_URL,
+    MAIN_DOMAIN,
 } = process.env;
 
 export const Config = {
@@ -36,4 +37,5 @@ export const Config = {
     JWKS_URI,
     CORS_CLIENT_URL,
     CORS_ADMIN_URL,
+    MAIN_DOMAIN,
 };
