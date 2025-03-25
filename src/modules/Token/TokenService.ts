@@ -17,11 +17,13 @@ export class TokenService {
     generateAccessToken(payload: JwtPayload) {
         let privateKey: Buffer;
 
-        // Read private key from file later
         try {
             privateKey = fs.readFileSync(
                 path.join(__dirname, "../../../certs/private.pem"),
             );
+            if (!privateKey && Config.PRIVATE_KEY) {
+                privateKey = Buffer.from(Config.PRIVATE_KEY);
+            }
         } catch (_error) {
             const err = CreateHttpError.InternalServerError(
                 "error while reading private key",
