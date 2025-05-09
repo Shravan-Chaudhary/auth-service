@@ -83,6 +83,7 @@ export class AuthController implements IAuthController {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                tenant: user.tenant,
             };
 
             const accessToken = this.tokenService.generateAccessToken(payload);
@@ -140,6 +141,7 @@ export class AuthController implements IAuthController {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
+                tenant: user.tenant,
             };
             const accessToken = this.tokenService.generateAccessToken(payload);
 
